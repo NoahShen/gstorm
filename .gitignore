@@ -8,3 +8,15 @@ build
 out
 /tmp
 /db
+.settings
+.project
+**/.settings
+**/.classpath
+**/.eclipse
+**/.project
+**/target
+*.iml
+.idea/
+target
+
+.DS_Store
