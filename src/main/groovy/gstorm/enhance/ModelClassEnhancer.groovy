@@ -33,6 +33,14 @@ class ModelClassEnhancer {
         modelMetaClass.static.where = { String clause ->
             sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
         }
+        modelMetaClass.static.findWhere = { String clause ->
+            sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
+        }
+
+        modelMetaClass.static.findFirstWhere = { String clause ->
+            def result = sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
+            (result) ? result.first() : null
+        }
 
         def selectAllQuery = new SelectQueryBuilder(metaData).build()
         def getAll = {

@@ -50,15 +50,15 @@ class DynamicFindEnhancer {
         String method
         String prefix
         if (finder.startsWith('findBy')) {
-            method = 'where'
+            method = 'findWhere'
             prefix = 'findBy'
         }
-//        else if (finder.startsWith('findFirstBy')) {
-//            method = 'findFirstWhere'
-//            prefix = 'findFirstBy'
-//        }
+        else if (finder.startsWith('findFirstBy')) {
+            method = 'findFirstWhere'
+            prefix = 'findFirstBy'
+        }
         else if (finder.startsWith('findAllBy')) {
-            method = 'where'
+            method = 'findWhere'
             prefix = 'findAllBy'
         } else {
             throw new MissingMethodException(finder, model, args)

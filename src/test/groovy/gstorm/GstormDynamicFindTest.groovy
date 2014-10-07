@@ -52,6 +52,22 @@ class GstormDynamicFindTest extends GroovyTestCase {
     }
 
     // context : save
+    void "test that find first"() {
+        new Person(name: 'Spiderman', age: 30).save()
+        new Person(name: 'Batman', age: 31).save()
+        new Person(name: 'Superman', age: 32).save()
+        new Person(name: 'Ironman', age: 32).save()
+
+        def person = Person.findFirstByAge(32)
+        assert person
+        assert person.name == "Superman"
+
+        def person2 = Person.findFirstByAge(100)
+        assert !person2
+
+    }
+
+    // context : save
     void "test that find by multi condition"() {
         new Person(name: 'Spiderman', age: 30).save()
         new Person(name: 'Batman', age: 31).save()
