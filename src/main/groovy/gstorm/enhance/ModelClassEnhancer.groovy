@@ -1,4 +1,4 @@
-package gstorm
+package gstorm.enhance
 
 import groovy.sql.Sql
 import gstorm.builders.CountQueryBuilder
@@ -13,6 +13,8 @@ class ModelClassEnhancer {
     final Sql sql
     final boolean canAddIdBasedMethods
 
+    final DynamicFindEnhancer dynamicFindEnhancer = new DynamicFindEnhancer()
+
     ModelClassEnhancer(ClassMetaData classMetaData, Sql sql) {
         this.metaData = classMetaData
         this.sql = sql
@@ -21,6 +23,7 @@ class ModelClassEnhancer {
 
     public void enhance() {
         addStaticDmlMethods()
+        addDynamicFindMethods()
         addInstanceDmlMethods()
     }
 
@@ -46,6 +49,7 @@ class ModelClassEnhancer {
         modelMetaClass.static.count = getCount
         modelMetaClass.static.getCount = getCount
 
+
         if (this.canAddIdBasedMethods){
             def selectByIdQuery = new SelectQueryBuilder(metaData).byId().build()
             modelMetaClass.static.get = { id ->
@@ -53,6 +57,18 @@ class ModelClassEnhancer {
                 (result) ? result.first() : null
             }
         }
+    }
+
+    private def addDynamicFindMethods() {
+        final modelMetaClass = metaData.modelClass.metaClass
+        modelMetaClass.static.methodMissing = { String name, args ->
+            if (dynamicFindEnhancer.supports(name)) {
+                return dynamicFindEnhancer.tryExecute(metaData.modelClass, name, (List) args)
+            } else {
+                new MissingMethodException(name, delegate, args)
+            }
+        }
+
     }
 
     private def addInstanceDmlMethods() {

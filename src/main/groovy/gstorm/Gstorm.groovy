@@ -3,6 +3,7 @@ package gstorm
 import groovy.sql.Sql
 import groovy.util.logging.Log
 import gstorm.builders.CreateTableQueryBuilder
+import gstorm.enhance.ModelClassEnhancer
 import gstorm.helpers.SqlObjectFactory
 import gstorm.metadata.ClassMetaData
 
