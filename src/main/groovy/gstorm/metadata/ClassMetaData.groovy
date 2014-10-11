@@ -1,7 +1,7 @@
 package gstorm.metadata
 
 import gstorm.Csv
-import gstorm.Id
+import gstorm.annotation.Id
 import gstorm.Table
 import gstorm.WithoutId
 

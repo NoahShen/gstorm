@@ -1,6 +1,6 @@
 package models
 
-import gstorm.Id
+import gstorm.annotation.Id
 
 class ClassWithIdAnnotation {
     @Id

@@ -34,10 +34,10 @@ class GstormClassWithoutIdTests {
     }
 
 
-    @Test(expected = MissingMethodException)
-    void "should not have static find method as it depend on id"() {
-        ClassWithoutId.find(12)
-    }
+//    @Test(expected = MissingMethodException)
+//    void "should not have static find method as it depend on id"() {
+//        ClassWithoutId.find(12)
+//    }
 
     @Test
     void "should have static methods that do not depend on id"() {
