@@ -1,8 +1,9 @@
 @GrabResolver(name='gstorm', root='http://dl.bintray.com/kdabir/maven')
 @GrabConfig(systemClassLoader = true) @Grab('gstorm:gstorm:0.6')
 import gstorm.*
+import gstorm.annotation.Table
 
-@Table("people")
+@Table(name = "people")
 class Person { String name, project } // this is your model class
 
 def g = new Gstorm()

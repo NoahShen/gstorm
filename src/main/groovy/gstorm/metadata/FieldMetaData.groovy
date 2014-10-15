@@ -1,7 +1,9 @@
 package gstorm.metadata
 
+import gstorm.annotation.Column
 import gstorm.helpers.TypeMapper
 
+import java.lang.annotation.Annotation
 import java.lang.reflect.Field
 
 class FieldMetaData {
@@ -11,6 +13,7 @@ class FieldMetaData {
         this.type = field.type
         this.name = field.name
         this.columnType = TypeMapper.instance.getSqlType(field.type)
-        this.columnName = field.name
+        Annotation columnAnno = field.getAnnotation(Column)
+        this.columnName = columnAnno ? columnAnno.name() : field.name
     }
 }

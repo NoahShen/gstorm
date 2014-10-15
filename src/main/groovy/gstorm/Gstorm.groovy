@@ -1,5 +1,4 @@
 package gstorm
-
 import groovy.sql.Sql
 import groovy.util.logging.Log
 import gstorm.builders.CreateTableQueryBuilder
@@ -12,6 +11,7 @@ import java.util.logging.Level
 
 @Log
 class Gstorm {
+
     Sql sql
 
     /**
@@ -53,20 +53,17 @@ class Gstorm {
      *
      * @param modelClass
      */
-    def stormify(Class modelClass) {
+    def stormify(Class modelClass, Boolean createTable = false) {
         ClassMetaData classMetaData = new ClassMetaData(modelClass)
-        createTableFor(classMetaData)
+        if (createTable) {
+            createTableFor(classMetaData)
+        }
         new ModelClassEnhancer(classMetaData, sql).enhance()
         return this
     }
 
     private def createTableFor(ClassMetaData metaData) {
         sql.execute(new CreateTableQueryBuilder(metaData).build())
-    }
-
-    def setCsvFile(Class modelClass, String filePath, boolean readOnly=false) {
-        def tableName = new ClassMetaData(modelClass).tableName
-        sql.execute(""" SET TABLE $tableName SOURCE "$filePath" ${(readOnly)?"DESC":""}""".toString())
     }
 
     def enableQueryLogging(level = Level.FINE) {

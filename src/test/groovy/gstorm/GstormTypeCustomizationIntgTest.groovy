@@ -19,7 +19,7 @@ class GstormTypeCustomizationIntgTest extends GroovyTestCase {
         sql = Sql.newInstance("jdbc:hsqldb:mem:randomdb;shutdown=true", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
 
-        gstorm.stormify(Item)
+        gstorm.stormify(Item, true)
 
     }
 

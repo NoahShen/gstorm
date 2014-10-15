@@ -15,7 +15,7 @@ class GstormConstructionTest {
     void "should create gstorm with instance of groovy Sql"() {
         def sql = groovy.sql.Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         def g = new Gstorm(sql)
-        g.stormify(Person)
+        g.stormify(Person, true)
 
         assert Person.count == 0 // gstorm should work
         assert sql == g.sql
@@ -26,7 +26,7 @@ class GstormConstructionTest {
         Class.forName("org.hsqldb.jdbcDriver");
         Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:database", "sa", "");
         def gstorm = new Gstorm(connection)
-        gstorm.stormify(Person)
+        gstorm.stormify(Person, true)
 
         assert Person.count == 0
         assert gstorm.sql.connection == connection
@@ -35,7 +35,7 @@ class GstormConstructionTest {
     @Test
     void "should create gstorm with memory db with no constructor arg"() {
         def gstorm = new Gstorm()
-        gstorm.stormify(Person) // should create table
+        gstorm.stormify(Person, true) // should create table
 
         assert Person.count == 0 // gstorm should work
         assert "jdbc:hsqldb:mem:database" == gstorm.sql.connection.getMetaData().getURL()
@@ -44,7 +44,7 @@ class GstormConstructionTest {
     @Test
     void "should create gstorm with file db with String constructor arg"() {
         def gstorm = new Gstorm("tmp/db/test-db")
-        gstorm.stormify(Person) // should create table
+        gstorm.stormify(Person, true) // should create table
 
         assert Person.count == 0 // gstorm should work
         assert "jdbc:hsqldb:file:tmp/db/test-db" == gstorm.sql.connection.getMetaData().getURL()
@@ -53,7 +53,7 @@ class GstormConstructionTest {
 
     @Test
     void "should be able to chain stormify"() {
-        def gstorm = new Gstorm().stormify(Person).stormify(ClassWithNumbers) // should create table
+        def gstorm = new Gstorm().stormify(Person, true).stormify(ClassWithNumbers, true) // should create table
 
         assert gstorm instanceof Gstorm
         assert Person.count == 0 // gstorm should work

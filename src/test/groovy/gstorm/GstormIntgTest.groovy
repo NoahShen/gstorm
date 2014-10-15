@@ -1,11 +1,6 @@
 package gstorm
-
 import groovy.sql.Sql
 import models.Person
-
-import java.sql.Connection
-import java.sql.DriverManager
-
 
 class GstormIntgTest extends GroovyTestCase {
 
@@ -15,7 +10,7 @@ class GstormIntgTest extends GroovyTestCase {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
-        gstorm.stormify(Person)
+        gstorm.stormify(Person, true)
     }
 
     void tearDown() {

@@ -15,8 +15,8 @@ class GstormDataTypesTest extends GroovyTestCase {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
         gstorm.enableQueryLogging(Level.INFO)
-        gstorm.stormify(ClassWithDates)
-        gstorm.stormify(ClassWithNumbers)
+        gstorm.stormify(ClassWithDates, true)
+        gstorm.stormify(ClassWithNumbers, true)
         dateFormat = new SimpleDateFormat("d/M/yyyy")
     }
 

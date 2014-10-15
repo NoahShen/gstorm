@@ -1,8 +1,8 @@
 package models
 
-import gstorm.Table
+import gstorm.annotation.Table
 
-@Table("TestTable")
+@Table(name = "TestTable")
 class ClassWithTable {
     String name
 }

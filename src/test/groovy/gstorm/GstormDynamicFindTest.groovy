@@ -11,7 +11,7 @@ class GstormDynamicFindTest extends GroovyTestCase {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
-        gstorm.stormify(Person)
+        gstorm.stormify(Person, true)
     }
 
     void tearDown() {

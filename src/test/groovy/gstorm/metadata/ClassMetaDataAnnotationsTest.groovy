@@ -1,9 +1,6 @@
 package gstorm.metadata
-
 import models.ClassWithIdAnnotation
 import models.ClassWithTable
-import models.ClassWithoutId
-
 
 class ClassMetaDataAnnotationsTest extends GroovyTestCase {
 
@@ -20,11 +17,6 @@ class ClassMetaDataAnnotationsTest extends GroovyTestCase {
         assert metadataWithId.idField.name.equals("uid")
     }
 
-    void "test WithoutId"() {
-        ClassMetaData metadataWithId = new ClassMetaData(ClassWithoutId)
-
-        assert metadataWithId.isWithoutId() == true
-    }
 
     void "test Id should not be included in fields"() {
         ClassMetaData metadataWithId = new ClassMetaData(ClassWithIdAnnotation)

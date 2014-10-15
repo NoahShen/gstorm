@@ -19,7 +19,7 @@ class GstormAnnotatedIdTests {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
-        gstorm.stormify(ClassWithIdAnnotation)
+        gstorm.stormify(ClassWithIdAnnotation, true)
     }
 
     @After

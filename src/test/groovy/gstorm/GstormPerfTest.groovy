@@ -1,12 +1,9 @@
 package gstorm
-
 import groovy.sql.Sql
 import models.Person
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
-
 
 class GstormPerfTest {
     Gstorm gstorm
@@ -17,7 +14,7 @@ class GstormPerfTest {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
-        gstorm.stormify(Person)
+        gstorm.stormify(Person, true)
         start = System.nanoTime()
     }
 

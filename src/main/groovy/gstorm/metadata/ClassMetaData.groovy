@@ -1,9 +1,7 @@
 package gstorm.metadata
 
-import gstorm.Csv
 import gstorm.annotation.Id
-import gstorm.Table
-import gstorm.WithoutId
+import gstorm.annotation.Table
 
 import java.lang.reflect.Field
 
@@ -39,16 +37,9 @@ class ClassMetaData {
     }
 
     private String extractTableName(Class modelClass) {
-        modelClass.getAnnotation(Table)?.value()?.trim() ?: modelClass.simpleName
+        modelClass.getAnnotation(Table)?.name()?.trim() ?: modelClass.simpleName
     }
 
-    boolean isWithoutId() {
-        modelClass.isAnnotationPresent(WithoutId)
-    }
-
-    boolean isCsv(){
-        modelClass.isAnnotationPresent(Csv)
-    }
 
     private List<FieldMetaData> getOtherFieldsOfClass(Class modelClass) {
         fieldsDeclaredIn(modelClass)
@@ -61,7 +52,7 @@ class ClassMetaData {
         idField ? new FieldMetaData(idField) : null
     }
 
-    private ArrayList<Field> fieldsDeclaredIn(Class modelClass) {
+    private List<Field> fieldsDeclaredIn(Class modelClass) {
         modelClass.declaredFields.findAll { !it.synthetic }
     }
 

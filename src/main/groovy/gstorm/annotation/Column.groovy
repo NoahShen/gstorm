@@ -14,9 +14,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME
 @Target([ElementType.FIELD])
 public @interface Column {
 
-    boolean insertable()
+    boolean insertable() default true
 
-    boolean updatable()
+    boolean updatable() default true
 
     String name()
 
