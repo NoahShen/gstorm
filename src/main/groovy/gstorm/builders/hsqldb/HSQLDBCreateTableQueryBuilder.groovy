@@ -1,11 +1,11 @@
 package gstorm.builders.hsqldb
 
-import gstorm.builders.AbstractQueryBuilder;
-import gstorm.metadata.ClassMetaData;
+import gstorm.builders.AbstractCreateTableQueryBuilder
+import gstorm.metadata.ClassMetaData
 
-class CreateTableQueryBuilder extends AbstractQueryBuilder {
+class HSQLDBCreateTableQueryBuilder extends AbstractCreateTableQueryBuilder {
 
-    CreateTableQueryBuilder(ClassMetaData classMetaData) {
+    HSQLDBCreateTableQueryBuilder(ClassMetaData classMetaData) {
         super(classMetaData)
     }
 

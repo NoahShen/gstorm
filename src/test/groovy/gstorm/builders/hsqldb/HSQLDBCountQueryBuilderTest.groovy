@@ -1,9 +1,8 @@
 package gstorm.builders.hsqldb
 
-import gstorm.builders.hsqldb.CountQueryBuilder
 import gstorm.metadata.ClassMetaData
 
-class CountQueryBuilderTest extends GroovyTestCase {
+class HSQLDBCountQueryBuilderTest extends GroovyTestCase {
 
     class Person {
         Integer id
@@ -11,20 +10,20 @@ class CountQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    CountQueryBuilder builder
+    HSQLDBCountQueryBuilder builder
     ClassMetaData classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new CountQueryBuilder(classMetaData)
+        builder = new HSQLDBCountQueryBuilder(classMetaData)
     }
 
     void "test builds default query if nothing else is provided"() {
-        assert builder.build().toLowerCase() == 'select count(*) as "count" from person'
+        assert builder.build().toLowerCase() == 'select count(1) as "count" from person'
     }
 
     void "test builds query with given where clause"() {
-        assert builder.where("age > 18").build().toLowerCase() == 'select count(*) as "count" from person where age > 18'
+        assert builder.where("age > 18").build().toLowerCase() == 'select count(1) as "count" from person where age > 18'
     }
 
 }

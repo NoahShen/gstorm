@@ -6,7 +6,6 @@ import gstorm.metadata.ClassMetaData
  */
 class MySqlCreateTableQueryBuilderTest extends GroovyTestCase {
 
-
     class Person {
         def name
         int age

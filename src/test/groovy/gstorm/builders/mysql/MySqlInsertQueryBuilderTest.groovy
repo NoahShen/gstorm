@@ -1,9 +1,8 @@
-package gstorm.builders.hsqldb
+package gstorm.builders.mysql
 
-import gstorm.builders.hsqldb.InsertQueryBuilder
 import gstorm.metadata.ClassMetaData
 
-class InsertQueryBuilderTest extends GroovyTestCase {
+class MySqlInsertQueryBuilderTest extends GroovyTestCase {
 
     class Person {
         def name
@@ -15,7 +14,7 @@ class InsertQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new InsertQueryBuilder(classMetaData)
+        builder = new MySqlInsertQueryBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

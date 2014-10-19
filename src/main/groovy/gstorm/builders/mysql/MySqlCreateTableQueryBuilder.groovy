@@ -1,9 +1,8 @@
 package gstorm.builders.mysql
-
-import gstorm.builders.AbstractQueryBuilder
+import gstorm.builders.AbstractCreateTableQueryBuilder
 import gstorm.metadata.ClassMetaData
 
-class MySqlCreateTableQueryBuilder extends AbstractQueryBuilder {
+class MySqlCreateTableQueryBuilder extends AbstractCreateTableQueryBuilder {
 
     MySqlCreateTableQueryBuilder(ClassMetaData classMetaData) {
         super(classMetaData)

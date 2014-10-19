@@ -1,9 +1,8 @@
-package gstorm.builders.hsqldb
+package gstorm.builders.mysql
 
-import gstorm.builders.hsqldb.DeleteQueryBuilder
 import gstorm.metadata.ClassMetaData
 
-class DeleteQueryBuilderTest extends GroovyTestCase {
+class MySqlDeleteQueryBuilderTest extends GroovyTestCase {
 
     class Person {
         def name
@@ -15,7 +14,7 @@ class DeleteQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new DeleteQueryBuilder(classMetaData)
+        builder = new MySqlDeleteQueryBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

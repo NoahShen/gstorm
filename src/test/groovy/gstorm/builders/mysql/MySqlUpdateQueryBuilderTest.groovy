@@ -1,8 +1,8 @@
-package gstorm.builders.hsqldb
+package gstorm.builders.mysql
 
 import gstorm.metadata.ClassMetaData
 
-class UpdateQueryBuilderTest extends GroovyTestCase {
+class MySqlUpdateQueryBuilderTest extends GroovyTestCase {
 
     class Person {
         def name
@@ -14,7 +14,7 @@ class UpdateQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new UpdateQueryBuilder(classMetaData)
+        builder = new MySqlUpdateQueryBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

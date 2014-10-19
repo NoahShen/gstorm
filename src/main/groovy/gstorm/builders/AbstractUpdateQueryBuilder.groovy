@@ -1,16 +1,14 @@
-package gstorm.builders.hsqldb
+package gstorm.builders
 
-import gstorm.builders.AbstractWhereableQueryBuilder
 import gstorm.metadata.ClassMetaData
 
-class UpdateQueryBuilder extends AbstractWhereableQueryBuilder {
+class AbstractUpdateQueryBuilder extends AbstractWhereableQueryBuilder {
 
-    UpdateQueryBuilder(ClassMetaData classMetaData) {
+    AbstractUpdateQueryBuilder(ClassMetaData classMetaData) {
         super(classMetaData)
         final fieldNames = classMetaData.fieldNames
         final placeholders = fieldNames.collect { "${it} = ?" }.join(", ")
 
         this.query = new StringBuilder("UPDATE ${classMetaData.tableName} SET ${placeholders}")
     }
-
 }

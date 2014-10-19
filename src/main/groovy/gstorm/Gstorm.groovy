@@ -1,7 +1,7 @@
 package gstorm
 import groovy.sql.Sql
 import groovy.util.logging.Log
-import gstorm.builders.hsqldb.CreateTableQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBCreateTableQueryBuilder
 import gstorm.enhance.ModelClassEnhancer
 import gstorm.helpers.SqlObjectFactory
 import gstorm.metadata.ClassMetaData
@@ -63,7 +63,7 @@ class Gstorm {
     }
 
     private def createTableFor(ClassMetaData metaData) {
-        sql.execute(new CreateTableQueryBuilder(metaData).build())
+        sql.execute(new HSQLDBCreateTableQueryBuilder(metaData).build())
     }
 
     def enableQueryLogging(level = Level.FINE) {

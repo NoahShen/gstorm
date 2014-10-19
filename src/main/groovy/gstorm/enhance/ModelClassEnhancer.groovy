@@ -1,11 +1,11 @@
 package gstorm.enhance
 
 import groovy.sql.Sql
-import gstorm.builders.hsqldb.CountQueryBuilder
-import gstorm.builders.hsqldb.DeleteQueryBuilder
-import gstorm.builders.hsqldb.InsertQueryBuilder
-import gstorm.builders.hsqldb.SelectQueryBuilder
-import gstorm.builders.hsqldb.UpdateQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBCountQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBDeleteQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBInsertQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBSelectQueryBuilder
+import gstorm.builders.hsqldb.HSQLDBUpdateQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class ModelClassEnhancer {
@@ -29,18 +29,18 @@ class ModelClassEnhancer {
         final modelMetaClass = metaData.modelClass.metaClass
 
         modelMetaClass.static.where = { String clause ->
-            sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
+            sql.rows(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
         }
         modelMetaClass.static.findWhere = { String clause ->
-            sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
+            sql.rows(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
         }
 
         modelMetaClass.static.findFirstWhere = { String clause ->
-            def result = sql.firstRow(new SelectQueryBuilder(metaData).where(clause).build())
+            def result = sql.firstRow(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
             result
         }
 
-        def selectAllQuery = new SelectQueryBuilder(metaData).build()
+        def selectAllQuery = new HSQLDBSelectQueryBuilder(metaData).build()
         def getAll = {
             sql.rows(selectAllQuery)
         }
@@ -48,7 +48,7 @@ class ModelClassEnhancer {
         modelMetaClass.static.all = getAll
 
         def getCount = { String optional_clause = null ->
-            def query = new CountQueryBuilder(metaData)
+            def query = new HSQLDBCountQueryBuilder(metaData)
             if (optional_clause) query.where(optional_clause)
             sql.firstRow(query.build()).count
         }
@@ -56,7 +56,7 @@ class ModelClassEnhancer {
         modelMetaClass.static.getCount = getCount
 
 
-        def selectByIdQuery = new SelectQueryBuilder(metaData).byId().build()
+        def selectByIdQuery = new HSQLDBSelectQueryBuilder(metaData).byId().build()
         modelMetaClass.static.get = { id ->
             final result = sql.rows(selectByIdQuery, [id])
             (result) ? result.first() : null
@@ -79,10 +79,10 @@ class ModelClassEnhancer {
         final modelMetaClass = metaData.modelClass.metaClass
         final fieldNames = metaData.fieldNames
 
-        final insertQuery = new InsertQueryBuilder(metaData).build()
+        final insertQuery = new HSQLDBInsertQueryBuilder(metaData).build()
 
-        final updateQuery = new UpdateQueryBuilder(metaData).byId().build()
-        final deleteQuery = new DeleteQueryBuilder(metaData).byId().build()
+        final updateQuery = new HSQLDBUpdateQueryBuilder(metaData).byId().build()
+        final deleteQuery = new HSQLDBDeleteQueryBuilder(metaData).byId().build()
 
         if (!metaData.idField) { // add id if not already defined
             modelMetaClass.id = null
