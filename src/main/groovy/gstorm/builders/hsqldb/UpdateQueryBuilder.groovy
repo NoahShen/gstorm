@@ -1,5 +1,6 @@
-package gstorm.builders
+package gstorm.builders.hsqldb
 
+import gstorm.builders.AbstractWhereableQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class UpdateQueryBuilder extends AbstractWhereableQueryBuilder {

@@ -1,5 +1,6 @@
-package gstorm.builders
+package gstorm.builders.mysql
 
+import gstorm.builders.AbstractQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class InsertQueryBuilder extends AbstractQueryBuilder {

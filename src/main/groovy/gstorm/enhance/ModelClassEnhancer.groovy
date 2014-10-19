@@ -1,11 +1,11 @@
 package gstorm.enhance
 
 import groovy.sql.Sql
-import gstorm.builders.CountQueryBuilder
-import gstorm.builders.DeleteQueryBuilder
-import gstorm.builders.InsertQueryBuilder
-import gstorm.builders.SelectQueryBuilder
-import gstorm.builders.UpdateQueryBuilder
+import gstorm.builders.hsqldb.CountQueryBuilder
+import gstorm.builders.hsqldb.DeleteQueryBuilder
+import gstorm.builders.hsqldb.InsertQueryBuilder
+import gstorm.builders.hsqldb.SelectQueryBuilder
+import gstorm.builders.hsqldb.UpdateQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class ModelClassEnhancer {
@@ -36,8 +36,8 @@ class ModelClassEnhancer {
         }
 
         modelMetaClass.static.findFirstWhere = { String clause ->
-            def result = sql.rows(new SelectQueryBuilder(metaData).where(clause).build())
-            (result) ? result.first() : null
+            def result = sql.firstRow(new SelectQueryBuilder(metaData).where(clause).build())
+            result
         }
 
         def selectAllQuery = new SelectQueryBuilder(metaData).build()

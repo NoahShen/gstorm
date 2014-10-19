@@ -1,5 +1,6 @@
-package gstorm.builders;
+package gstorm.builders.hsqldb
 
+import gstorm.builders.AbstractQueryBuilder;
 import gstorm.metadata.ClassMetaData;
 
 class CreateTableQueryBuilder extends AbstractQueryBuilder {

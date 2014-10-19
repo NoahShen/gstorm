@@ -1,4 +1,4 @@
-package gstorm.builders
+package gstorm.builders.hsqldb
 
 import gstorm.metadata.ClassMetaData
 

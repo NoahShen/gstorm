@@ -1,5 +1,6 @@
-package gstorm.builders
+package gstorm.builders.hsqldb
 
+import gstorm.builders.hsqldb.DeleteQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class DeleteQueryBuilderTest extends GroovyTestCase {

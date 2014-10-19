@@ -1,5 +1,6 @@
-package gstorm.builders
+package gstorm.builders.mysql
 
+import gstorm.builders.AbstractWhereableQueryBuilder
 import gstorm.metadata.ClassMetaData
 
 class SelectQueryBuilder extends AbstractWhereableQueryBuilder {
