@@ -106,7 +106,8 @@ class GstormIntgTest extends GroovyTestCase {
         def batman = new Person(name: 'Batman', age: 35).save()
         def spiderman = new Person(name: 'Spiderman', age: 30).save()
 
-        assert Person.get(batman.id).name == "Batman"
+        Person p = Person.get(batman.id)
+        assert p.name == "Batman"
     }
 
     void "test find model by id when id doesnt exist"() {
