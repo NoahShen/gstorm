@@ -1,22 +1,21 @@
 package gstorm.enhance
-
 import groovy.sql.Sql
-import gstorm.builders.hsqldb.HSQLDBCountQueryBuilder
-import gstorm.builders.hsqldb.HSQLDBDeleteQueryBuilder
-import gstorm.builders.hsqldb.HSQLDBInsertQueryBuilder
-import gstorm.builders.hsqldb.HSQLDBSelectQueryBuilder
-import gstorm.builders.hsqldb.HSQLDBUpdateQueryBuilder
+import gstorm.builders.SQLBuilderFactory
+import gstorm.builders.SQLDialect
 import gstorm.metadata.ClassMetaData
 
 class ModelClassEnhancer {
     final ClassMetaData metaData
     final Sql sql
 
+    SQLDialect dialect
+
     final DynamicFindEnhancer dynamicFindEnhancer = new DynamicFindEnhancer()
 
-    ModelClassEnhancer(ClassMetaData classMetaData, Sql sql) {
+    ModelClassEnhancer(ClassMetaData classMetaData, Sql sql, SQLDialect dialect = SQLDialect.HSQLDB) {
         this.metaData = classMetaData
         this.sql = sql
+        this.dialect = dialect
     }
 
     public void enhance() {
@@ -27,20 +26,20 @@ class ModelClassEnhancer {
 
     private def addStaticDmlMethods() {
         final modelMetaClass = metaData.modelClass.metaClass
-
+        SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
         modelMetaClass.static.where = { String clause ->
-            sql.rows(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
+            sql.rows(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
         }
         modelMetaClass.static.findWhere = { String clause ->
-            sql.rows(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
+            sql.rows(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
         }
 
         modelMetaClass.static.findFirstWhere = { String clause ->
-            def result = sql.firstRow(new HSQLDBSelectQueryBuilder(metaData).where(clause).build())
+            def result = sql.firstRow(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
             result
         }
 
-        def selectAllQuery = new HSQLDBSelectQueryBuilder(metaData).build()
+        def selectAllQuery = sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).build()
         def getAll = {
             sql.rows(selectAllQuery)
         }
@@ -48,7 +47,7 @@ class ModelClassEnhancer {
         modelMetaClass.static.all = getAll
 
         def getCount = { String optional_clause = null ->
-            def query = new HSQLDBCountQueryBuilder(metaData)
+            def query = sqlBuilderFactory.createCountQueryBuilder(this.dialect, metaData)
             if (optional_clause) query.where(optional_clause)
             sql.firstRow(query.build()).count
         }
@@ -56,7 +55,7 @@ class ModelClassEnhancer {
         modelMetaClass.static.getCount = getCount
 
 
-        def selectByIdQuery = new HSQLDBSelectQueryBuilder(metaData).byId().build()
+        def selectByIdQuery = sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).byId().build()
         modelMetaClass.static.get = { id ->
             final result = sql.rows(selectByIdQuery, [id])
             (result) ? result.first() : null
@@ -78,11 +77,13 @@ class ModelClassEnhancer {
     private def addInstanceDmlMethods() {
         final modelMetaClass = metaData.modelClass.metaClass
         final fieldNames = metaData.fieldNames
+        SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
 
-        final insertQuery = new HSQLDBInsertQueryBuilder(metaData).build()
 
-        final updateQuery = new HSQLDBUpdateQueryBuilder(metaData).byId().build()
-        final deleteQuery = new HSQLDBDeleteQueryBuilder(metaData).byId().build()
+        final insertQuery = sqlBuilderFactory.createInsertQueryBuilder(this.dialect, metaData).build()
+
+        final updateQuery = sqlBuilderFactory.createUpdateQueryBuilder(this.dialect, metaData).byId().build()
+        final deleteQuery = sqlBuilderFactory.createDeleteQueryBuilder(this.dialect, metaData).byId().build()
 
         if (!metaData.idField) { // add id if not already defined
             modelMetaClass.id = null

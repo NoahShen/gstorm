@@ -1,7 +1,8 @@
 package gstorm
 import groovy.sql.Sql
 import groovy.util.logging.Log
-import gstorm.builders.hsqldb.HSQLDBCreateTableQueryBuilder
+import gstorm.builders.SQLBuilderFactory
+import gstorm.builders.SQLDialect
 import gstorm.enhance.ModelClassEnhancer
 import gstorm.helpers.SqlObjectFactory
 import gstorm.metadata.ClassMetaData
@@ -13,6 +14,8 @@ import java.util.logging.Level
 class Gstorm {
 
     Sql sql
+
+    SQLDialect dialect
 
     /**
      * Constructs Gstorm using in-memory hsqldb database
@@ -44,8 +47,9 @@ class Gstorm {
      *
      * @param connection instance of groovy.sql.Sql
      */
-    Gstorm(Sql sql) {
+    Gstorm(Sql sql, SQLDialect dialect = SQLDialect.HSQLDB) {
         this.sql = sql
+        this.dialect = dialect
     }
 
     /**
@@ -58,12 +62,13 @@ class Gstorm {
         if (createTable) {
             createTableFor(classMetaData)
         }
-        new ModelClassEnhancer(classMetaData, sql).enhance()
+        new ModelClassEnhancer(classMetaData, sql, dialect).enhance()
         return this
     }
 
     private def createTableFor(ClassMetaData metaData) {
-        sql.execute(new HSQLDBCreateTableQueryBuilder(metaData).build())
+        SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
+        sql.execute(sqlBuilderFactory.createCreateTableBuilder(dialect, metaData).build())
     }
 
     def enableQueryLogging(level = Level.FINE) {
