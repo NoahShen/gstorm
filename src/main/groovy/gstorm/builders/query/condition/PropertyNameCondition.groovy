@@ -10,7 +10,7 @@ class PropertyNameCondition implements Condition {
     PropertyNameCondition(String propertyName) {
         this.propertyName = propertyName
     }
-w
+
     protected void setPropertyName(String propertyName) {
         this.propertyName = propertyName
     }

@@ -1,0 +1,16 @@
+package gstorm.builders.query.condition
+
+/**
+ * Created by noahshen on 14-10-30.
+ */
+class NotIn extends PropertyValueCondition {
+
+    NotIn(String propertyName, List value) {
+        super(propertyName, value)
+    }
+
+    @Override
+    void setValue(List value) {
+        super.setValue(value)
+    }
+}

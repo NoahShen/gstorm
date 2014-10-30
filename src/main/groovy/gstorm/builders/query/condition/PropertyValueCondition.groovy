@@ -5,14 +5,11 @@ package gstorm.builders.query.condition
  */
 class PropertyValueCondition extends PropertyNameCondition {
 
-    Object value;
+    def value
 
-    PropertyValueCondition(String propertyName, Object value) {
+    PropertyValueCondition(String propertyName, value) {
         super(propertyName)
         this.value = value
     }
 
-    protected void setValue(Object value) {
-        this.value = value
-    }
 }
