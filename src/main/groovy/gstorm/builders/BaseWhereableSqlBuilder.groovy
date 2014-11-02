@@ -137,6 +137,9 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
         this
     }
 
+    // TODO andCondition orCondition
+
+
     private addCondition(Condition c) {
         queryCondition.addCondition(c)
     }
