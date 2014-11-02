@@ -5,7 +5,7 @@ package gstorm.builders.query.condition
  */
 class Like extends PropertyValueCondition {
 
-    Like(String propertyName, expression) {
+    Like(String propertyName, String expression) {
         super(propertyName, expression)
     }
 }

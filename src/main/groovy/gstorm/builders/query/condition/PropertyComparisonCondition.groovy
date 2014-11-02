@@ -3,11 +3,12 @@ package gstorm.builders.query.condition
 /**
  * Created by noahshen on 14-10-28.
  */
-class PropertyComparisonCondition implements Condition {
+class PropertyComparisonCondition extends PropertyNameCondition {
 
     String otherProperty;
 
-    PropertyComparisonCondition(String otherProperty) {
+    PropertyComparisonCondition(String propertyName, String otherProperty) {
+        super(propertyName)
         this.otherProperty = otherProperty
     }
 

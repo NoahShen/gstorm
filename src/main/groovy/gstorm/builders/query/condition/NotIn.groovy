@@ -9,8 +9,4 @@ class NotIn extends PropertyValueCondition {
         super(propertyName, value)
     }
 
-    @Override
-    void setValue(List value) {
-        super.setValue(value)
-    }
 }

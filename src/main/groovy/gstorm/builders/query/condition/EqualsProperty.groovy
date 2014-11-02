@@ -5,7 +5,7 @@ package gstorm.builders.query.condition
  */
 class EqualsProperty  extends PropertyComparisonCondition {
 
-    EqualsProperty(String otherProperty) {
-        super(otherProperty)
+    EqualsProperty(String propertyName, String otherProperty) {
+        super(propertyName, otherProperty)
     }
 }

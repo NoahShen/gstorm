@@ -7,9 +7,6 @@ abstract class MultiCondition implements Condition {
 
     List<Condition> conditions
 
-    MultiCondition() {
-    }
-
     MultiCondition(Condition... conditions) {
         this.conditions = conditions?.toList()
     }
