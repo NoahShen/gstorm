@@ -14,7 +14,7 @@ class HSQLDBDeleteQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new HSQLDBDeleteQueryBuilder(classMetaData)
+        builder = new HSQLDBDeleteSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

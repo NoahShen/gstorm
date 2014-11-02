@@ -14,7 +14,7 @@ class MySqlInsertQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new MySqlInsertQueryBuilder(classMetaData)
+        builder = new MySqlInsertSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

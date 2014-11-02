@@ -11,12 +11,12 @@ class HSQLDBCreateTableQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    HSQLDBCreateTableQueryBuilder builder
+    HSQLDBCreateTableSqlBuilder builder
     def classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person)
-        builder = new HSQLDBCreateTableQueryBuilder(classMetaData)
+        builder = new HSQLDBCreateTableSqlBuilder(classMetaData)
     }
 
     void "test generate mysql create sql"() {

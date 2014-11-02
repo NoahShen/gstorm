@@ -10,12 +10,12 @@ class HSQLDBCountQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    HSQLDBCountQueryBuilder builder
+    HSQLDBCountSqlBuilder builder
     ClassMetaData classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new HSQLDBCountQueryBuilder(classMetaData)
+        builder = new HSQLDBCountSqlBuilder(classMetaData)
     }
 
     void "test builds default query if nothing else is provided"() {

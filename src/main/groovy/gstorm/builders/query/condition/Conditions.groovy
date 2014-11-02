@@ -69,27 +69,27 @@ class Conditions {
         new IsNotEmpty(propertyName)
     }
 
-    static EqualsProperty eqProperty(String propertyName, String value) {
-        new EqualsProperty(propertyName, value)
+    static EqualsProperty eqProperty(String propertyName, String otherProperty) {
+        new EqualsProperty(propertyName, otherProperty)
     }
 
-    static NotEqualsProperty neProperty(String propertyName, String value) {
-        new NotEqualsProperty(propertyName, value)
+    static NotEqualsProperty neProperty(String propertyName, String otherProperty) {
+        new NotEqualsProperty(propertyName, otherProperty)
     }
 
-    static GreaterThanProperty gtProperty(String propertyName, String value) {
-        new GreaterThanProperty(propertyName, value)
+    static GreaterThanProperty gtProperty(String propertyName, String otherProperty) {
+        new GreaterThanProperty(propertyName, otherProperty)
     }
 
-    static GreaterThanEqualsProperty geProperty(String propertyName, String value) {
-        new GreaterThanEqualsProperty(propertyName, value)
+    static GreaterThanEqualsProperty geProperty(String propertyName, String otherProperty) {
+        new GreaterThanEqualsProperty(propertyName, otherProperty)
     }
 
-    static LessThanProperty ltProperty(String propertyName, String value) {
-        new LessThanProperty(propertyName, value)
+    static LessThanProperty ltProperty(String propertyName, String otherProperty) {
+        new LessThanProperty(propertyName, otherProperty)
     }
 
-    static LessThanEqualsProperty leProperty(String propertyName, String value) {
-        new LessThanEqualsProperty(propertyName, value)
+    static LessThanEqualsProperty leProperty(String propertyName, String otherProperty) {
+        new LessThanEqualsProperty(propertyName, otherProperty)
     }
 }

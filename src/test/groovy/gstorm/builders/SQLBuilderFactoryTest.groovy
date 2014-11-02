@@ -32,54 +32,54 @@ class SQLBuilderFactoryTest extends GroovyTestCase {
     void "test create CreateTableBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createCreateTableBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBCreateTableQueryBuilder
+        assert builder instanceof HSQLDBCreateTableSqlBuilder
 
         def mysqlBuilder = factory.createCreateTableBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlCreateTableQueryBuilder
+        assert mysqlBuilder instanceof MySqlCreateTableSqlBuilder
     }
 
     void "test create CountQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createCountQueryBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBCountQueryBuilder
+        assert builder instanceof HSQLDBCountSqlBuilder
 
         def mysqlBuilder = factory.createCountQueryBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlCountQueryBuilder
+        assert mysqlBuilder instanceof MySqlCountSqlBuilder
     }
 
     void "test create DeleteQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createDeleteQueryBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBDeleteQueryBuilder
+        assert builder instanceof HSQLDBDeleteSqlBuilder
 
         def mysqlBuilder = factory.createDeleteQueryBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlDeleteQueryBuilder
+        assert mysqlBuilder instanceof MySqlDeleteSqlBuilder
     }
 
     void "test create InsertQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createInsertQueryBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBInsertQueryBuilder
+        assert builder instanceof HSQLDBInsertSqlBuilder
 
         def mysqlBuilder = factory.createInsertQueryBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlInsertQueryBuilder
+        assert mysqlBuilder instanceof MySqlInsertSqlBuilder
     }
 
     void "test create SelectQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createSelectQueryBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBSelectQueryBuilder
+        assert builder instanceof HSQLDBSelectSqlBuilder
 
         def mysqlBuilder = factory.createSelectQueryBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlSelectQueryBuilder
+        assert mysqlBuilder instanceof MySqlSelectSqlBuilder
     }
 
     void "test create UpdateQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
         def builder = factory.createUpdateQueryBuilder(SQLDialect.HSQLDB, classMetaData)
-        assert builder instanceof HSQLDBUpdateQueryBuilder
+        assert builder instanceof HSQLDBUpdateSqlBuilder
 
         def mysqlBuilder = factory.createUpdateQueryBuilder(SQLDialect.MYSQL, classMetaData)
-        assert mysqlBuilder instanceof MySqlUpdateQueryBuilder
+        assert mysqlBuilder instanceof MySqlUpdateSqlBuilder
     }
 }

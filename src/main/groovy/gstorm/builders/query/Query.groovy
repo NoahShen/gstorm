@@ -1,7 +1,6 @@
 package gstorm.builders.query
 
-import gstorm.builders.query.condition.AndCondition
-
+import gstorm.builders.query.condition.Condition
 /**
  * Created by noahshen on 14-10-26.
  */
@@ -13,7 +12,14 @@ class Query {
 
     List<Order> orderBy = []
 
-    AndCondition andCondition
+    List<Condition> conditions = []
+
+    Query addCondition(Condition c) {
+        if (c) {
+            conditions.add(c)
+        }
+        return this
+    }
 
     static class Order {
         Direction direction = Direction.ASC;

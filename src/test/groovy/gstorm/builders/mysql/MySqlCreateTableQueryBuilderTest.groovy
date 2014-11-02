@@ -11,12 +11,12 @@ class MySqlCreateTableQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    MySqlCreateTableQueryBuilder builder
+    MySqlCreateTableSqlBuilder builder
     def classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person)
-        builder = new MySqlCreateTableQueryBuilder(classMetaData)
+        builder = new MySqlCreateTableSqlBuilder(classMetaData)
     }
 
     void "test generate mysql create sql"() {

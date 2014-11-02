@@ -1,11 +1,10 @@
-package gstorm.builders.hsqldb
-
-import gstorm.builders.AbstractCreateTableQueryBuilder
+package gstorm.builders.mysql
+import gstorm.builders.BaseCreateTableSqlBuilder
 import gstorm.metadata.ClassMetaData
 
-class HSQLDBCreateTableQueryBuilder extends AbstractCreateTableQueryBuilder {
+class MySqlCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
 
-    HSQLDBCreateTableQueryBuilder(ClassMetaData classMetaData) {
+    MySqlCreateTableSqlBuilder(ClassMetaData classMetaData) {
         super(classMetaData)
     }
 
@@ -13,7 +12,8 @@ class HSQLDBCreateTableQueryBuilder extends AbstractCreateTableQueryBuilder {
         def tableName = classMetaData.tableName
         def columnDefs = classMetaData.fields.collect { field -> "${field.name} ${field.columnType}" }
 
-        columnDefs.add(0, "${classMetaData.idFieldName ?: 'ID'} NUMERIC GENERATED ALWAYS AS IDENTITY PRIMARY KEY")
+        columnDefs.add(0, "${classMetaData.idFieldName ?: 'ID'} int(11) NOT NULL AUTO_INCREMENT")
+        columnDefs.add("PRIMARY KEY (${classMetaData.idFieldName ?: 'ID'})")
 
         new StringBuilder("CREATE").append(SPACE)
                 .append('TABLE').append(SPACE)

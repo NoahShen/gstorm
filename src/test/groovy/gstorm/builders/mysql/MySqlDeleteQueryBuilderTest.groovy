@@ -14,7 +14,7 @@ class MySqlDeleteQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new MySqlDeleteQueryBuilder(classMetaData)
+        builder = new MySqlDeleteSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

@@ -10,12 +10,12 @@ class MySqlSelectQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    MySqlSelectQueryBuilder builder
+    MySqlSelectSqlBuilder builder
     ClassMetaData classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new MySqlSelectQueryBuilder(classMetaData)
+        builder = new MySqlSelectSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

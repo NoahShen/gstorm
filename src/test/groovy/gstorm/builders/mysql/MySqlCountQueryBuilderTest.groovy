@@ -10,12 +10,12 @@ class MySqlCountQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    MySqlCountQueryBuilder builder
+    MySqlCountSqlBuilder builder
     ClassMetaData classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new MySqlCountQueryBuilder(classMetaData)
+        builder = new MySqlCountSqlBuilder(classMetaData)
     }
 
     void "test builds default query if nothing else is provided"() {

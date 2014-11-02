@@ -2,9 +2,9 @@ package gstorm.builders
 
 import gstorm.metadata.ClassMetaData
 
-abstract class AbstractInsertQueryBuilder extends AbstractQueryBuilder {
+abstract class BaseInsertSqlBuilder extends BaseSqlBuilder {
 
-    AbstractInsertQueryBuilder(ClassMetaData classMetaData) {
+    BaseInsertSqlBuilder(ClassMetaData classMetaData) {
         super(classMetaData)
     }
 

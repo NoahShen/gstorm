@@ -14,7 +14,7 @@ class MySqlUpdateQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new MySqlUpdateQueryBuilder(classMetaData)
+        builder = new MySqlUpdateSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

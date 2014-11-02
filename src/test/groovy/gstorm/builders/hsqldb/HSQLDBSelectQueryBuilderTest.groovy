@@ -10,12 +10,12 @@ class HSQLDBSelectQueryBuilderTest extends GroovyTestCase {
         int age
     }
 
-    HSQLDBSelectQueryBuilder builder
+    HSQLDBSelectSqlBuilder builder
     ClassMetaData classMetaData
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new HSQLDBSelectQueryBuilder(classMetaData)
+        builder = new HSQLDBSelectSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

@@ -14,7 +14,7 @@ class HSQLDBUpdateQueryBuilderTest extends GroovyTestCase {
 
     void setUp() {
         classMetaData = new ClassMetaData(Person.class)
-        builder = new HSQLDBUpdateQueryBuilder(classMetaData)
+        builder = new HSQLDBUpdateSqlBuilder(classMetaData)
     }
 
     void "test if builder is created" () {

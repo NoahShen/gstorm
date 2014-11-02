@@ -25,51 +25,51 @@ class SQLBuilderFactory {
         instance
     }
 
-    AbstractCreateTableQueryBuilder createCreateTableBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseCreateTableSqlBuilder createCreateTableBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBCreateTableQueryBuilder(classMetaData)
+            new HSQLDBCreateTableSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlCreateTableQueryBuilder(classMetaData);
+            new MySqlCreateTableSqlBuilder(classMetaData);
         }
     }
 
-    AbstractInsertQueryBuilder createInsertQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseInsertSqlBuilder createInsertQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBInsertQueryBuilder(classMetaData)
+            new HSQLDBInsertSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlInsertQueryBuilder(classMetaData);
+            new MySqlInsertSqlBuilder(classMetaData);
         }
     }
 
-    AbstractUpdateQueryBuilder createUpdateQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseUpdateSqlBuilder createUpdateQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBUpdateQueryBuilder(classMetaData)
+            new HSQLDBUpdateSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlUpdateQueryBuilder(classMetaData);
+            new MySqlUpdateSqlBuilder(classMetaData);
         }
     }
 
-    AbstractDeleteQueryBuilder createDeleteQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseDeleteSqlBuilder createDeleteQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBDeleteQueryBuilder(classMetaData)
+            new HSQLDBDeleteSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlDeleteQueryBuilder(classMetaData);
+            new MySqlDeleteSqlBuilder(classMetaData);
         }
     }
 
-    AbstractCountQueryBuilder createCountQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseCountSqlBuilder createCountQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBCountQueryBuilder(classMetaData)
+            new HSQLDBCountSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlCountQueryBuilder(classMetaData);
+            new MySqlCountSqlBuilder(classMetaData);
         }
     }
 
-    AbstractSelectQueryBuilder createSelectQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseSelectSqlBuilder createSelectQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBSelectQueryBuilder(classMetaData)
+            new HSQLDBSelectSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlSelectQueryBuilder(classMetaData);
+            new MySqlSelectSqlBuilder(classMetaData);
         }
     }
 }
