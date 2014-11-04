@@ -1,8 +1,10 @@
 package gstorm.builders
 
 import gstorm.builders.query.Query
+import gstorm.builders.query.condition.AndCondition
 import gstorm.builders.query.condition.Condition
 import gstorm.builders.query.condition.Conditions
+import gstorm.builders.query.condition.OrCondition
 import gstorm.metadata.ClassMetaData
 
 /**
@@ -12,9 +14,12 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
 
     Query queryCondition
 
+    List multiConditionStack
+
     BaseWhereableSqlBuilder(ClassMetaData classMetaData) {
         super(classMetaData)
         queryCondition = new Query()
+        multiConditionStack = []
     }
 
     def where(String clause) {
@@ -30,6 +35,26 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
     @Override
     String build() {
         query.toString()
+    }
+
+    BaseWhereableSqlBuilder max(int max) {
+        queryCondition.max = max
+        this
+    }
+
+    BaseWhereableSqlBuilder offset(int offset) {
+        queryCondition.offset = offset
+        this
+    }
+
+    BaseWhereableSqlBuilder order(String propertyName) {
+        queryCondition.orderBy << new Query.Order(propertyName)
+        this
+    }
+
+    BaseWhereableSqlBuilder order(String propertyName, String direction) {
+        queryCondition.orderBy << new Query.Order(propertyName, Query.Order.Direction.valueOf(direction.toUpperCase()))
+        this
     }
 
     BaseWhereableSqlBuilder eq(String propertyName, value) {
@@ -137,10 +162,33 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
         this
     }
 
-    // TODO andCondition orCondition
+    BaseWhereableSqlBuilder and(Closure callable) {
+        multiConditionStack << new AndCondition()
+        handleMultiCondition(callable)
+        this
+    }
 
+    BaseWhereableSqlBuilder or(Closure callable) {
+        multiConditionStack << new OrCondition()
+        handleMultiCondition(callable)
+        this
+    }
+
+    private void handleMultiCondition(Closure callable) {
+        try {
+            callable.delegate = this
+            callable.call()
+        } finally {
+            def lastCondition = multiConditionStack.pop()
+            addCondition lastCondition
+        }
+    }
 
     private addCondition(Condition c) {
-        queryCondition.addCondition(c)
+        if (multiConditionStack) {
+            multiConditionStack[-1].addCondition(c)
+        } else {
+            queryCondition.addCondition(c)
+        }
     }
 }

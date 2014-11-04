@@ -17,4 +17,8 @@ abstract class MultiCondition implements Condition {
         }
         return this
     }
+
+    protected void setConditions(List<Condition> conditions) {
+        this.conditions = conditions
+    }
 }
