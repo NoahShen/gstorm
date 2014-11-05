@@ -75,5 +75,10 @@ class BaseWhereableSqlBuilderTest extends Specification {
         BaseWhereableSqlBuilderMockTest(ClassMetaData classMetaData) {
             super(classMetaData)
         }
+
+        @Override
+        String buildSql() {
+            return null
+        }
     }
 }

@@ -10,6 +10,7 @@ class ClassMetaData {
     final String tableName
     final FieldMetaData idField
     private final List<FieldMetaData> fields
+    private final List<FieldMetaData> allFields
     private Map _fieldsCache        // just to avoid iterating over list of fields and finding by name.
 
     ClassMetaData(Class modelClass) {
@@ -17,6 +18,7 @@ class ClassMetaData {
         this.tableName = extractTableName(modelClass)
         this.idField = getIdFieldOfClass(modelClass)
         this.fields = getOtherFieldsOfClass(modelClass)
+        this.allFields = getAllFieldsOfClass(modelClass)
         this._fieldsCache = this.fields.collectEntries { fieldMetaData -> [fieldMetaData.name, fieldMetaData] }
     }
 
@@ -26,6 +28,10 @@ class ClassMetaData {
 
     List<FieldMetaData> getFields() {
         Collections.unmodifiableList(this.fields);
+    }
+
+    List<FieldMetaData> getAllFields() {
+        Collections.unmodifiableList(this.allFields);
     }
 
     List<String> getFieldNames() {
@@ -45,6 +51,9 @@ class ClassMetaData {
         fieldsDeclaredIn(modelClass)
                 .findAll { !it.isAnnotationPresent(Id) }
                 .collect { field -> new FieldMetaData(field) }
+    }
+    private List<FieldMetaData> getAllFieldsOfClass(Class modelClass) {
+        fieldsDeclaredIn(modelClass).collect { field -> new FieldMetaData(field) }
     }
 
     private FieldMetaData getIdFieldOfClass(Class modelClass) {

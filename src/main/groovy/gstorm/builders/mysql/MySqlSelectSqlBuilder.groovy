@@ -9,4 +9,17 @@ class MySqlSelectSqlBuilder extends BaseSelectSqlBuilder {
         super(classMetaData)
     }
 
+    @Override
+    String build() {
+        def fields = classMetaData.getAllFields()
+        def projections = fields.collect { "${it.columnName} as \"${it.name}\"" }.join(", ")
+
+//        StringBuilder query = new StringBuilder("SELECT ${projections} FROM ${classMetaData.tableName}")
+
+
+        def conditionSql = queryCondition.conditions.collect {
+            MySqlConditions.generateConditionSql(it, classMetaData)
+        }
+    }
+
 }
