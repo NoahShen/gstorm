@@ -16,10 +16,10 @@ class MySqlSelectSqlBuilder extends BaseSelectSqlBuilder {
 
 //        StringBuilder query = new StringBuilder("SELECT ${projections} FROM ${classMetaData.tableName}")
 
-
+        def values = []
         def conditionSql = queryCondition.conditions.collect {
-            MySqlConditions.generateConditionSql(it, classMetaData)
-        }
+            MySqlConditions.generateConditionSql(it, classMetaData, values)
+        }.join(" AND ")
     }
 
 }
