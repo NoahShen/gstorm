@@ -29,57 +29,57 @@ class SQLBuilderFactoryTest extends GroovyTestCase {
 
     }
 
-    void "test create CreateTableBuilder"() {
+    void "test create CreateTableSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createCreateTableBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createCreateTableSqlBuilder(SQLDialect.HSQLDB, classMetaData)
         assert builder instanceof HSQLDBCreateTableSqlBuilder
 
-        def mysqlBuilder = factory.createCreateTableBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createCreateTableSqlBuilder(SQLDialect.MYSQL, classMetaData)
         assert mysqlBuilder instanceof MySqlCreateTableSqlBuilder
     }
 
-    void "test create CountQueryBuilder"() {
+    void "test create CountSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createCountQueryBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createCountSqlBuilder(SQLDialect.HSQLDB, classMetaData)
         assert builder instanceof HSQLDBCountSqlBuilder
 
-        def mysqlBuilder = factory.createCountQueryBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createCountSqlBuilder(SQLDialect.MYSQL, classMetaData)
         assert mysqlBuilder instanceof MySqlCountSqlBuilder
     }
 
-    void "test create DeleteQueryBuilder"() {
+    void "test create DeleteSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createDeleteQueryBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createDeleteSqlBuilder(SQLDialect.HSQLDB, classMetaData)
         assert builder instanceof HSQLDBDeleteSqlBuilder
 
-        def mysqlBuilder = factory.createDeleteQueryBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createDeleteSqlBuilder(SQLDialect.MYSQL, classMetaData)
         assert mysqlBuilder instanceof MySqlDeleteSqlBuilder
     }
 
-    void "test create InsertQueryBuilder"() {
+    void "test create InsertSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createInsertQueryBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
+        def builder = factory.createInsertSqlBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
         assert builder instanceof HSQLDBInsertSqlBuilder
 
-        def mysqlBuilder = factory.createInsertQueryBuilder(SQLDialect.MYSQL, classMetaData, new Person())
+        def mysqlBuilder = factory.createInsertSqlBuilder(SQLDialect.MYSQL, classMetaData, new Person())
         assert mysqlBuilder instanceof MySqlInsertSqlBuilder
     }
 
-    void "test create SelectQueryBuilder"() {
+    void "test create SelectSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createSelectQueryBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createSelectSqlBuilder(SQLDialect.HSQLDB, classMetaData)
         assert builder instanceof HSQLDBSelectSqlBuilder
 
-        def mysqlBuilder = factory.createSelectQueryBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createSelectSqlBuilder(SQLDialect.MYSQL, classMetaData)
         assert mysqlBuilder instanceof MySqlSelectSqlBuilder
     }
 
-    void "test create UpdateQueryBuilder"() {
+    void "test create UpdateSqlBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createUpdateQueryBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
+        def builder = factory.createUpdateSqlBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
         assert builder instanceof HSQLDBUpdateSqlBuilder
 
-        def mysqlBuilder = factory.createUpdateQueryBuilder(SQLDialect.MYSQL, classMetaData, new Person())
+        def mysqlBuilder = factory.createUpdateSqlBuilder(SQLDialect.MYSQL, classMetaData, new Person())
         assert mysqlBuilder instanceof MySqlUpdateSqlBuilder
     }
 }

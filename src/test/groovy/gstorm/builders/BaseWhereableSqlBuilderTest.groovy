@@ -1,6 +1,8 @@
 package gstorm.builders
 
+import gstorm.annotation.Id
 import gstorm.builders.query.condition.AndCondition
+import gstorm.builders.query.condition.Equals
 import gstorm.builders.query.condition.OrCondition
 import gstorm.metadata.ClassMetaData
 import spock.lang.Specification
@@ -12,6 +14,8 @@ class BaseWhereableSqlBuilderTest extends Specification {
     BaseWhereableSqlBuilder baseWhereableSqlBuilder
 
     class Person {
+        @Id
+        Integer id
         def name
         int age
     }
@@ -68,6 +72,18 @@ class BaseWhereableSqlBuilderTest extends Specification {
         baseWhereableSqlBuilder.queryCondition.conditions.size() == 2
         baseWhereableSqlBuilder.queryCondition.conditions[-1] instanceof AndCondition
         baseWhereableSqlBuilder.queryCondition.conditions[-1].conditions[-1] instanceof OrCondition
+    }
+
+
+    def "IdEq"() {
+        setup:
+
+        when:
+        baseWhereableSqlBuilder.idEq(123)
+
+        then:
+        baseWhereableSqlBuilder.queryCondition.conditions.size() == 1
+        baseWhereableSqlBuilder.queryCondition.conditions[0] instanceof Equals
     }
 
     private class BaseWhereableSqlBuilderMockTest extends BaseWhereableSqlBuilder {

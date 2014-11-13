@@ -25,7 +25,7 @@ class SQLBuilderFactory {
         instance
     }
 
-    BaseCreateTableSqlBuilder createCreateTableBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseCreateTableSqlBuilder createCreateTableSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBCreateTableSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
@@ -33,7 +33,7 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseInsertSqlBuilder createInsertQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
+    BaseInsertSqlBuilder createInsertSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBInsertSqlBuilder(classMetaData, entity)
         } else if (dialect == SQLDialect.MYSQL) {
@@ -41,7 +41,7 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseUpdateSqlBuilder createUpdateQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
+    BaseUpdateSqlBuilder createUpdateSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBUpdateSqlBuilder(classMetaData, entity)
         } else if (dialect == SQLDialect.MYSQL) {
@@ -49,7 +49,7 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseDeleteSqlBuilder createDeleteQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseDeleteSqlBuilder createDeleteSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBDeleteSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
@@ -57,7 +57,7 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseCountSqlBuilder createCountQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseCountSqlBuilder createCountSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBCountSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {
@@ -65,7 +65,7 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseSelectSqlBuilder createSelectQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseSelectSqlBuilder createSelectSqlBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
         if (dialect == SQLDialect.HSQLDB) {
             new HSQLDBSelectSqlBuilder(classMetaData)
         } else if (dialect == SQLDialect.MYSQL) {

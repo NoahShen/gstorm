@@ -27,38 +27,48 @@ class ModelClassEnhancer {
     private def addStaticDmlMethods() {
         final modelMetaClass = metaData.modelClass.metaClass
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
-        modelMetaClass.static.where = { String clause ->
-            sql.rows(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
-        }
-        modelMetaClass.static.findWhere = { String clause ->
-            sql.rows(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
+
+        def where = { Closure whereClosure ->
+            def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
+            whereClosure.delegate = selectSqlBuilder
+            whereClosure.call()
+            def buildResult = selectSqlBuilder.buildSqlAndValues()
+            sql.rows(buildResult.sql, buildResult.values)
         }
 
-        modelMetaClass.static.findFirstWhere = { String clause ->
-            def result = sql.firstRow(sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).where(clause).build())
-            result
+        modelMetaClass.static.where = where
+        modelMetaClass.static.findWhere = where
+
+        modelMetaClass.static.findFirstWhere = { Closure whereClosure ->
+            def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
+            whereClosure.delegate = selectSqlBuilder
+            whereClosure.call()
+            def buildResult = selectSqlBuilder.buildSqlAndValues()
+            sql.firstRow(buildResult.sql, buildResult.values)
         }
 
-        def selectAllQuery = sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).build()
         def getAll = {
-            sql.rows(selectAllQuery)
+            def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
+            def buildResult = selectSqlBuilder.buildSqlAndValues()
+            sql.rows(buildResult.sql)
         }
         modelMetaClass.static.getAll = getAll
         modelMetaClass.static.all = getAll
 
-        def getCount = { String optional_clause = null ->
-            def query = sqlBuilderFactory.createCountQueryBuilder(this.dialect, metaData)
-            if (optional_clause) query.where(optional_clause)
-            sql.firstRow(query.build()).count
+        def getCount = { Closure whereClosure ->
+            def countSqlBuilder = sqlBuilderFactory.createCountSqlBuilder(this.dialect, metaData)
+            whereClosure.delegate = countSqlBuilder
+            whereClosure.call()
+            def buildResult = countSqlBuilder.buildSqlAndValues()
+            sql.firstRow(buildResult.sql, buildResult.values).count
         }
         modelMetaClass.static.count = getCount
         modelMetaClass.static.getCount = getCount
 
-
-        def selectByIdQuery = sqlBuilderFactory.createSelectQueryBuilder(this.dialect, metaData).byId().build()
         modelMetaClass.static.get = { id ->
-            final result = sql.rows(selectByIdQuery, [id])
-            (result) ? result.first() : null
+            def selectByIdQuery = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
+            def buildResult = selectByIdQuery.eq(metaData.idField.name, id).buildSqlAndValues()
+            sql.firstRow(buildResult.sql, buildResult.values)
         }
     }
 
@@ -80,7 +90,6 @@ class ModelClassEnhancer {
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
 
 
-        final insertQuery = sqlBuilderFactory.createInsertQueryBuilder(this.dialect, metaData).build()
 
         final updateQuery = sqlBuilderFactory.createUpdateQueryBuilder(this.dialect, metaData).byId().build()
         final deleteQuery = sqlBuilderFactory.createDeleteQueryBuilder(this.dialect, metaData).byId().build()
@@ -94,19 +103,23 @@ class ModelClassEnhancer {
 
         modelMetaClass.save = {
             if (delegate.id$ == null) {
-                final values = fieldNames.collect { delegate.getProperty(it) }
-                final generatedIds = sql.executeInsert(insertQuery, values)
+                def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, delegate)
+                def buildResult = insertSqlBuilder.buildSqlAndValues()
+                final generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
                 delegate.id$ = generatedIds[0][0] // pretty stupid way to extract it
             } else {
-                final values = fieldNames.collect { delegate.getProperty(it) } << delegate.id$
-                sql.executeUpdate(updateQuery, values)
+                def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, delegate)
+                def buildResult = updateSqlBuilder.idEq(delegate.id$).buildSqlAndValues()
+                sql.executeUpdate(buildResult.sql, buildResult.values)
             }
             delegate
         }
 
         modelMetaClass.delete = {
             if (delegate.id$ != null) {
-                sql.execute(deleteQuery, [delegate.id$])
+                def deleteSqlBuilder = sqlBuilderFactory.createDeleteSqlBuilder(this.dialect, metaData)
+                def buildResult = deleteSqlBuilder.idEq(delegate.id$).buildSqlAndValues()
+                sql.execute(buildResult.sql, buildResult.values)
             }
             delegate
         }

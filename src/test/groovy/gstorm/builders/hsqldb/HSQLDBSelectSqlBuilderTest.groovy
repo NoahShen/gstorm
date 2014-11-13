@@ -1,10 +1,12 @@
 package gstorm.builders.hsqldb
 import gstorm.annotation.Column
+import gstorm.annotation.Id
 import gstorm.metadata.ClassMetaData
 
 class HSQLDBSelectSqlBuilderTest extends GroovyTestCase {
 
     class Person {
+        @Id
         @Column(name = "PersonID")
         Integer id
 
@@ -36,5 +38,19 @@ class HSQLDBSelectSqlBuilderTest extends GroovyTestCase {
         assert result.values[1] == 10
     }
 
+    void "test buildSqlAndValues no where"() {
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person"
+        assert !result.values
+    }
+
+
+    void "test select by id"() {
+        builder.idEq(123)
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonID = ?"
+        assert result.values.size() == 1
+        assert result.values[0] == 123
+    }
 }
 

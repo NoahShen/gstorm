@@ -18,11 +18,15 @@ class HSQLDBUpdateSqlBuilder extends BaseUpdateSqlBuilder {
             updateFieldPlaceHolder << "${it.columnName} = ?"
             values << entity.getProperty(it.name)
         }
-        def conditionSql = queryCondition.conditions.collect {
-            HSQLDBConditions.generateConditionSql(it, classMetaData, values)
-        }.join(" AND ")
+        def where = ""
+        if (queryCondition.conditions) {
+            def conditionSql = queryCondition.conditions.collect {
+                HSQLDBConditions.generateConditionSql(it, classMetaData, values)
+            }.join(" AND ")
+            where = " WHERE ${conditionSql}"
+        }
 
-        def sql = "UPDATE ${classMetaData.tableName} SET ${updateFieldPlaceHolder.join(", ")} WHERE ${conditionSql}"
+        def sql = "UPDATE ${classMetaData.tableName} SET ${updateFieldPlaceHolder.join(", ")}${where}"
         new BuildResult(sql: sql, values: values)
     }
 }

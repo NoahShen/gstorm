@@ -33,5 +33,12 @@ class HSQLDBDeleteSqlBuilderTest extends GroovyTestCase {
         assert result.values.size() == 1
         assert result.values[0] == "Noah"
     }
+
+    void "test no where clause"() {
+        def result = builder.buildSqlAndValues()
+
+        assert result.sql == "DELETE FROM Person"
+        assert !result.values
+    }
 }
 

@@ -159,6 +159,11 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
         this
     }
 
+
+    BaseWhereableSqlBuilder idEq(id) {
+        addCondition Conditions.eq(classMetaData.idField.name, id)
+        this
+    }
     private void handleMultiCondition(Closure callable) {
         try {
             callable.delegate = this

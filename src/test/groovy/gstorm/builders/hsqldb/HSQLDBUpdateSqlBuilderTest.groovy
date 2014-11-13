@@ -41,6 +41,14 @@ class HSQLDBUpdateSqlBuilderTest extends GroovyTestCase {
         assert result.values[2] == 8787
     }
 
+    void "test no where clause"() {
+        def result = builder.buildSqlAndValues()
+
+        assert result.sql == "UPDATE Person SET PersonName = ?, PersonAge = ?"
+        assert result.values.size() == 2
+        assert result.values[0] == "Noah"
+        assert result.values[1] == 17
+    }
 
 }
 

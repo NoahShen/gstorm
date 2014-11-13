@@ -16,11 +16,15 @@ class HSQLDBSelectSqlBuilder extends BaseSelectSqlBuilder {
         def projections = fields.collect { "${it.columnName} as \"${it.name}\"" }.join(", ")
 
         def values = []
-        def conditionSql = queryCondition.conditions.collect {
-            HSQLDBConditions.generateConditionSql(it, classMetaData, values)
-        }.join(" AND ")
+        def where = ""
+        if (queryCondition.conditions) {
+            def conditionSql = queryCondition.conditions.collect {
+                HSQLDBConditions.generateConditionSql(it, classMetaData, values)
+            }.join(" AND ")
+            where = " WHERE ${conditionSql}"
+        }
 
-        def sql = "SELECT ${projections} FROM ${classMetaData.tableName} WHERE ${conditionSql}"
+        def sql = "SELECT ${projections} FROM ${classMetaData.tableName}${where}"
         new BuildResult(sql: sql, values: values)
     }
 }
