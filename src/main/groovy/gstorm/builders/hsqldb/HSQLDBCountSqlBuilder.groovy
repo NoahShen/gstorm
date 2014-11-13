@@ -12,11 +12,15 @@ class HSQLDBCountSqlBuilder extends BaseCountSqlBuilder {
     @Override
     BuildResult buildSqlAndValues() {
         def values = []
-        def conditionSql = queryCondition.conditions.collect {
-            HSQLDBConditions.generateConditionSql(it, classMetaData, values)
-        }.join(" AND ")
+        def where = ""
+        if (queryCondition.conditions) {
+            def conditionSql = queryCondition.conditions.collect {
+                HSQLDBConditions.generateConditionSql(it, classMetaData, values)
+            }.join(" AND ")
+            where = " WHERE ${conditionSql}"
+        }
 
-        def sql = "SELECT COUNT(1) as \"count\" FROM ${classMetaData.tableName} WHERE ${conditionSql}"
+        def sql = "SELECT COUNT(1) as \"count\" FROM ${classMetaData.tableName}${where}"
         new BuildResult(sql: sql, values: values)
     }
 }

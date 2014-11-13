@@ -30,7 +30,6 @@ class GstormAnnotatedIdTests {
 
     @Test
     void "Annotated Id field should be used to as Primary Key in create table"() {
-
         assert sql.rows("select COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = ?", [tableName])
                 .collect { it.column_name }
                 .contains("UID")

@@ -9,6 +9,13 @@ import java.lang.reflect.Field
 class FieldMetaData {
     def type, name, columnName, columnType
 
+    FieldMetaData(type, name, columnName, columnType) {
+        this.type = type
+        this.name = name
+        this.columnName = columnName
+        this.columnType = columnType
+    }
+
     FieldMetaData(Field field) {
         this.type = field.type
         this.name = field.name

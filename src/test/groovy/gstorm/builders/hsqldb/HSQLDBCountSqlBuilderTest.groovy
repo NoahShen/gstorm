@@ -33,5 +33,12 @@ class HSQLDBCountSqlBuilderTest extends GroovyTestCase {
         assert result.values[1] == 10
     }
 
+
+    void "test buildSqlAndValues no where"() {
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT COUNT(1) as \"count\" FROM Person"
+        assert result.values.size() == 0
+    }
+
 }
 

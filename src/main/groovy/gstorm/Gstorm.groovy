@@ -68,7 +68,8 @@ class Gstorm {
 
     private def createTableFor(ClassMetaData metaData) {
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
-        sql.execute(sqlBuilderFactory.createCreateTableBuilder(dialect, metaData).build())
+        def buildResult = sqlBuilderFactory.createCreateTableSqlBuilder(dialect, metaData).buildSqlAndValues()
+        sql.execute(buildResult.sql)
     }
 
     def enableQueryLogging(level = Level.FINE) {

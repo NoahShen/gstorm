@@ -29,6 +29,9 @@ class ModelClassEnhancer {
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
 
         def where = { Closure whereClosure ->
+            if (!whereClosure) {
+                throw new IllegalArgumentException("no whereClosure")
+            }
             def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
             whereClosure.delegate = selectSqlBuilder
             whereClosure.call()
@@ -40,6 +43,9 @@ class ModelClassEnhancer {
         modelMetaClass.static.findWhere = where
 
         modelMetaClass.static.findFirstWhere = { Closure whereClosure ->
+            if (!whereClosure) {
+                throw new IllegalArgumentException("no whereClosure")
+            }
             def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
             whereClosure.delegate = selectSqlBuilder
             whereClosure.call()
@@ -57,8 +63,10 @@ class ModelClassEnhancer {
 
         def getCount = { Closure whereClosure ->
             def countSqlBuilder = sqlBuilderFactory.createCountSqlBuilder(this.dialect, metaData)
-            whereClosure.delegate = countSqlBuilder
-            whereClosure.call()
+            if (whereClosure) {
+                whereClosure.delegate = countSqlBuilder
+                whereClosure.call()
+            }
             def buildResult = countSqlBuilder.buildSqlAndValues()
             sql.firstRow(buildResult.sql, buildResult.values).count
         }
@@ -67,7 +75,7 @@ class ModelClassEnhancer {
 
         modelMetaClass.static.get = { id ->
             def selectByIdQuery = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
-            def buildResult = selectByIdQuery.eq(metaData.idField.name, id).buildSqlAndValues()
+            def buildResult = selectByIdQuery.idEq(id).buildSqlAndValues()
             sql.firstRow(buildResult.sql, buildResult.values)
         }
     }
@@ -86,13 +94,8 @@ class ModelClassEnhancer {
 
     private def addInstanceDmlMethods() {
         final modelMetaClass = metaData.modelClass.metaClass
-        final fieldNames = metaData.fieldNames
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
 
-
-
-        final updateQuery = sqlBuilderFactory.createUpdateQueryBuilder(this.dialect, metaData).byId().build()
-        final deleteQuery = sqlBuilderFactory.createDeleteQueryBuilder(this.dialect, metaData).byId().build()
 
         if (!metaData.idField) { // add id if not already defined
             modelMetaClass.id = null

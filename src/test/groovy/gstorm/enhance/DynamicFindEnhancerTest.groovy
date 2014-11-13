@@ -1,7 +1,6 @@
 package gstorm.enhance
 
 import spock.lang.Specification
-
 /**
  * Created by noahshen on 14-10-7.
  */
@@ -137,5 +136,4 @@ class DynamicFindEnhancerTest extends Specification {
         act[0] == [limit: 4]
         act[1] instanceof Closure
     }
-
 }

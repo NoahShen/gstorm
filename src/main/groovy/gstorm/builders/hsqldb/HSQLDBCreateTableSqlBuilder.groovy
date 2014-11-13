@@ -14,7 +14,7 @@ class HSQLDBCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
     @Override
     BuildResult buildSqlAndValues() {
         def tableName = classMetaData.tableName
-        def columnDefs = classMetaData.fields.collect { field -> "`${field.columnName}` ${field.columnType}" }
+        def columnDefs = classMetaData.fields.collect { field -> "${field.columnName} ${field.columnType}" }
 
         columnDefs.add(0, "${classMetaData.idFieldName ?: 'ID'} NUMERIC GENERATED ALWAYS AS IDENTITY PRIMARY KEY")
 

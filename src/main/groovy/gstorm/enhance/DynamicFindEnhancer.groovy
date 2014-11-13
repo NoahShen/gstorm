@@ -19,18 +19,17 @@ class DynamicFindEnhancer {
         }
     }
 
-    Map<String, Object> buildWhere(List<String> fields, def valuesOrValue) {
+    Map buildWhere(List fields, def valuesOrValue) {
         Iterable values
         if (valuesOrValue instanceof Iterable) {
             values = valuesOrValue
         } else {
             values = [valuesOrValue]
         }
-        Map<String, Object> where = [:]
+        def where = [:]
         values.eachWithIndex { Object value, int i ->
             if (i < fields.size()) {
-                String field = fields[i]
-                where[field] = value
+                where[fields[i]] = value
             }
         }
         return where
@@ -49,17 +48,12 @@ class DynamicFindEnhancer {
     def tryExecute(Class model, String finder, List args) {
         String method
         String prefix
-        if (finder.startsWith('findBy')) {
+        if (finder.startsWith('findBy') || finder.startsWith('findAllBy')) {
             method = 'findWhere'
             prefix = 'findBy'
-        }
-        else if (finder.startsWith('findFirstBy')) {
+        } else if (finder.startsWith('findFirstBy')) {
             method = 'findFirstWhere'
             prefix = 'findFirstBy'
-        }
-        else if (finder.startsWith('findAllBy')) {
-            method = 'findWhere'
-            prefix = 'findAllBy'
         } else {
             throw new MissingMethodException(finder, model, args)
         }
@@ -67,14 +61,19 @@ class DynamicFindEnhancer {
         List<String> fields = parseTail(tail)
         List values = args.subList(0, fields.size())
         Map query = buildWhere(fields, values)
-//        List extra = getExtra(fields, args)
-//        List newArgs = [query]
-//        newArgs.addAll(extra)
-//        model.metaClass.invokeStaticMethod(model, method, newArgs.toArray())
 
-        String whereClause = query.inject('') { c, k, v ->
-            c ? "$c and $k = '$v'" : "$k = '$v'"
+        List extra = getExtra(fields, args)
+        def whereClosure = {
+            query?.each { k,v ->
+                eq(k, v)
+            }
+            extra?.each {
+                if (it instanceof Closure) {
+                    it.delegate = delegate
+                    it.call()
+                }
+            }
         }
-        model.metaClass.invokeStaticMethod(model, method, whereClause)
+        model.metaClass.invokeStaticMethod(model, method, whereClosure)
     }
 }

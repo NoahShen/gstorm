@@ -49,7 +49,7 @@ class ClassMetaData {
 
     private List<FieldMetaData> getOtherFieldsOfClass(Class modelClass) {
         fieldsDeclaredIn(modelClass)
-                .findAll { !it.isAnnotationPresent(Id) }
+                .findAll { !it.isAnnotationPresent(Id) && it.name != "id" }
                 .collect { field -> new FieldMetaData(field) }
     }
     private List<FieldMetaData> getAllFieldsOfClass(Class modelClass) {
@@ -57,8 +57,9 @@ class ClassMetaData {
     }
 
     private FieldMetaData getIdFieldOfClass(Class modelClass) {
-        def idField = fieldsDeclaredIn(modelClass).find { it.isAnnotationPresent(Id) }
-        idField ? new FieldMetaData(idField) : null
+        def idField = fieldsDeclaredIn(modelClass).find { it.isAnnotationPresent(Id) || it.name == "id" }
+        //TODO id
+        idField ? new FieldMetaData(idField) : new FieldMetaData(Integer, "id", "ID", "NUMERIC")
     }
 
     private List<Field> fieldsDeclaredIn(Class modelClass) {

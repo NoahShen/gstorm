@@ -17,7 +17,7 @@ class GstormConstructionTest {
         def g = new Gstorm(sql)
         g.stormify(Person, true)
 
-        assert Person.count == 0 // gstorm should work
+        assert Person.count() == 0 // gstorm should work
         assert sql == g.sql
     }
 
@@ -28,7 +28,7 @@ class GstormConstructionTest {
         def gstorm = new Gstorm(connection)
         gstorm.stormify(Person, true)
 
-        assert Person.count == 0
+        assert Person.count() == 0
         assert gstorm.sql.connection == connection
     }
 
@@ -37,7 +37,7 @@ class GstormConstructionTest {
         def gstorm = new Gstorm()
         gstorm.stormify(Person, true) // should create table
 
-        assert Person.count == 0 // gstorm should work
+        assert Person.count() == 0 // gstorm should work
         assert "jdbc:hsqldb:mem:database" == gstorm.sql.connection.getMetaData().getURL()
     }
 
@@ -46,7 +46,7 @@ class GstormConstructionTest {
         def gstorm = new Gstorm("tmp/db/test-db")
         gstorm.stormify(Person, true) // should create table
 
-        assert Person.count == 0 // gstorm should work
+        assert Person.count() == 0 // gstorm should work
         assert "jdbc:hsqldb:file:tmp/db/test-db" == gstorm.sql.connection.getMetaData().getURL()
         assert new File("tmp/db/test-db.properties").exists()
     }
@@ -56,8 +56,8 @@ class GstormConstructionTest {
         def gstorm = new Gstorm().stormify(Person, true).stormify(ClassWithNumbers, true) // should create table
 
         assert gstorm instanceof Gstorm
-        assert Person.count == 0 // gstorm should work
-        assert ClassWithNumbers.count == 0 // gstorm should work
+        assert Person.count() == 0 // gstorm should work
+        assert ClassWithNumbers.count() == 0 // gstorm should work
     }
 
 }
