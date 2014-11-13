@@ -76,5 +76,9 @@ class BaseWhereableSqlBuilderTest extends Specification {
             super(classMetaData)
         }
 
+        @Override
+        BuildResult buildSqlAndValues() {
+            return null
+        }
     }
 }

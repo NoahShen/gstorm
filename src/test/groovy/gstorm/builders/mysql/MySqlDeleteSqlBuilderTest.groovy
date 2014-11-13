@@ -2,14 +2,14 @@ package gstorm.builders.mysql
 
 import gstorm.metadata.ClassMetaData
 
-class MySqlDeleteQueryBuilderTest extends GroovyTestCase {
+class MySqlDeleteSqlBuilderTest extends GroovyTestCase {
 
     class Person {
         def name
         int age
     }
 
-    def builder
+    MySqlDeleteSqlBuilder builder
     def classMetaData
 
     void setUp() {
@@ -22,11 +22,17 @@ class MySqlDeleteQueryBuilderTest extends GroovyTestCase {
     }
 
     void "test the generated delete query" () {
-        assert builder.build().toLowerCase() == "delete from person"
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "DELETE FROM `Person`"
+        assert !result.values
     }
 
     void "test the generated delete query with where clause" () {
-        assert builder.where("id = ?").build().toLowerCase() == "delete from person where id = ?"
+        def result = builder.eq("name", "Noah").buildSqlAndValues()
+
+        assert result.sql == "DELETE FROM `Person` WHERE `name` = ?"
+        assert result.values.size() == 1
+        assert result.values[0] == "Noah"
     }
 
 }

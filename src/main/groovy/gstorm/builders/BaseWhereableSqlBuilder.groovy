@@ -22,21 +22,6 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
         multiConditionStack = []
     }
 
-    def where(String clause) {
-        query.append(SPACE).append("WHERE ${clause}")
-        this
-    }
-
-    def byId() {
-        def id = classMetaData.idFieldName ?: "id"
-        this.where("${id} = ?")
-    }
-
-    @Override
-    String build() {
-        query.toString()
-    }
-
     BaseWhereableSqlBuilder max(int max) {
         queryCondition.max = max
         this

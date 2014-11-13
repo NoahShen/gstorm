@@ -19,7 +19,7 @@ class ClassMetaData {
         this.idField = getIdFieldOfClass(modelClass)
         this.fields = getOtherFieldsOfClass(modelClass)
         this.allFields = getAllFieldsOfClass(modelClass)
-        this._fieldsCache = this.fields.collectEntries { fieldMetaData -> [fieldMetaData.name, fieldMetaData] }
+        this._fieldsCache = this.allFields.collectEntries { fieldMetaData -> [fieldMetaData.name, fieldMetaData] }
     }
 
     FieldMetaData getAt(String fieldName) {

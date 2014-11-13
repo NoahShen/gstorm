@@ -4,7 +4,7 @@ import gstorm.metadata.ClassMetaData
 /**
  * Created by noahshen on 14-10-19.
  */
-class HSQLDBCreateTableQueryBuilderTest extends GroovyTestCase {
+class HSQLDBCreateTableSqlBuilderTest extends GroovyTestCase {
 
     class Person {
         def name
@@ -20,7 +20,7 @@ class HSQLDBCreateTableQueryBuilderTest extends GroovyTestCase {
     }
 
     void "test generate mysql create sql"() {
-        def createSql =  builder.build().toLowerCase()
-        assert createSql == "create table if not exists person (id numeric generated always as identity primary key, name varchar(255), age numeric)"
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "CREATE TABLE IF NOT EXISTS Person (ID NUMERIC GENERATED ALWAYS AS IDENTITY PRIMARY KEY, `name` VARCHAR(255), `age` NUMERIC)"
     }
 }

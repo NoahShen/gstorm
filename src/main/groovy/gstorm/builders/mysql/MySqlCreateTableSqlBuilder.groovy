@@ -1,5 +1,6 @@
 package gstorm.builders.mysql
 import gstorm.builders.BaseCreateTableSqlBuilder
+import gstorm.builders.BuildResult
 import gstorm.metadata.ClassMetaData
 
 class MySqlCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
@@ -8,18 +9,15 @@ class MySqlCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
         super(classMetaData)
     }
 
-    String build() {
+    @Override
+    BuildResult buildSqlAndValues() {
         def tableName = classMetaData.tableName
-        def columnDefs = classMetaData.fields.collect { field -> "${field.name} ${field.columnType}" }
+        def columnDefs = classMetaData.fields.collect { field -> "`${field.columnName}` ${field.columnType}" }
 
-        columnDefs.add(0, "${classMetaData.idFieldName ?: 'ID'} int(11) NOT NULL AUTO_INCREMENT")
-        columnDefs.add("PRIMARY KEY (${classMetaData.idFieldName ?: 'ID'})")
+        columnDefs.add(0, "${classMetaData.idFieldName ?: '`ID`'} INT(11) NOT NULL AUTO_INCREMENT")
+        columnDefs.add("PRIMARY KEY (${classMetaData.idFieldName ?: '`ID`'})")
 
-        new StringBuilder("CREATE").append(SPACE)
-                .append('TABLE').append(SPACE)
-                .append("IF NOT EXISTS").append(SPACE)
-                .append(tableName).append(SPACE)
-                .append("(${ columnDefs.join(', ') })")
-                .toString()
+        def sql = "CREATE TABLE IF NOT EXISTS `${tableName}` (${columnDefs.join(', ')})"
+        new BuildResult(sql: sql, values: null)
     }
 }

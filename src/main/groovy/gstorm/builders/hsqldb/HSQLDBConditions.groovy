@@ -1,12 +1,12 @@
-package gstorm.builders.mysql
+package gstorm.builders.hsqldb
 
 import gstorm.builders.query.condition.*
 import gstorm.metadata.ClassMetaData
 
 /**
- * Created by noahshen on 14-11-5.
+ * Created by noahshen on 14-11-13.
  */
-class MySqlConditions {
+class HSQLDBConditions {
 
     static String generateConditionSql(Condition c, ClassMetaData metaData, List values) {
         if (c instanceof AndCondition) {
@@ -24,65 +24,65 @@ class MySqlConditions {
             if (c instanceof PropertyValueCondition) {
                 if (c instanceof Equals) {
                     values << c.value
-                    return "`${columnName}` = ?"
+                    return "${columnName} = ?"
                 } else if (c instanceof NotEquals) {
                     values << c.value
-                    return "`${columnName}` <> ?"
+                    return "${columnName} <> ?"
                 } else if (c instanceof GreaterThan) {
                     values << c.value
-                    return "`${columnName}` > ?"
+                    return "${columnName} > ?"
                 } else if (c instanceof GreaterThanEquals) {
                     values << c.value
-                    return "`${columnName}` >= ?"
+                    return "${columnName} >= ?"
                 }  else if (c instanceof LessThan) {
                     values << c.value
-                    return "`${columnName}` < ?"
+                    return "${columnName} < ?"
                 } else if (c instanceof LessThanEquals) {
                     values << c.value
-                    return "`${columnName}` <= ?"
+                    return "${columnName} <= ?"
                 } else if (c instanceof In) {
                     def placeHolder = c.value.collect {
                         values << it
                         "?"
                     }.join(", ")
-                    return "`${columnName}` IN (${placeHolder})"
+                    return "${columnName} IN (${placeHolder})"
                 }  else if (c instanceof NotIn) {
                     def placeHolder = c.value.collect {
                         values << it
                         "?"
                     }.join(", ")
-                    return "`${columnName}` NOT IN (${placeHolder})"
+                    return "${columnName} NOT IN (${placeHolder})"
                 } else if (c instanceof Like) {
                     values << c.value
-                    return "`${columnName}` LIKE ?"
+                    return "${columnName} LIKE ?"
                 } else if (c instanceof Between) {
                     values << c.from
                     values << c.to
-                    return "`${columnName}` BETWEEN ? AND ?"
+                    return "${columnName} BETWEEN ? AND ?"
                 }
             } else if (c instanceof PropertyComparisonCondition) {
                 def otherColumnName = metaData[c.otherProperty]?.columnName
                 if (c instanceof EqualsProperty) {
-                    return "`${columnName}` = ${otherColumnName}"
+                    return "${columnName} = ${otherColumnName}"
                 } else if (c instanceof NotEqualsProperty) {
-                    return "`${columnName}` <> ${otherColumnName}"
+                    return "${columnName} <> ${otherColumnName}"
                 } else if (c instanceof GreaterThanEqualsProperty) {
-                    return "`${columnName}` >= ${otherColumnName}"
+                    return "${columnName} >= ${otherColumnName}"
                 } else if (c instanceof GreaterThanProperty) {
-                    return "`${columnName}` > ${otherColumnName}"
+                    return "${columnName} > ${otherColumnName}"
                 } else if (c instanceof LessThanEqualsProperty) {
-                    return "`${columnName}` <= ${otherColumnName}"
+                    return "${columnName} <= ${otherColumnName}"
                 } else if (c instanceof LessThanProperty) {
-                    return "`${columnName}` < ${otherColumnName}"
+                    return "${columnName} < ${otherColumnName}"
                 }
             } else if (c instanceof IsEmpty) {
-                return "`${columnName}` = ''"
+                return "${columnName} = ''"
             } else if (c instanceof IsNotEmpty) {
-                return "`${columnName}` <> ''"
+                return "${columnName} <> ''"
             } else if (c instanceof IsNotNull) {
-                return "`${columnName}` IS NOT NULL"
+                return "${columnName} IS NOT NULL"
             } else if (c instanceof IsNull) {
-                return "`${columnName}` IS NULL"
+                return "${columnName} IS NULL"
             }
         }
     }

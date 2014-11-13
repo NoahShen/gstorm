@@ -58,10 +58,10 @@ class SQLBuilderFactoryTest extends GroovyTestCase {
 
     void "test create InsertQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createInsertQueryBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createInsertQueryBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
         assert builder instanceof HSQLDBInsertSqlBuilder
 
-        def mysqlBuilder = factory.createInsertQueryBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createInsertQueryBuilder(SQLDialect.MYSQL, classMetaData, new Person())
         assert mysqlBuilder instanceof MySqlInsertSqlBuilder
     }
 
@@ -76,10 +76,10 @@ class SQLBuilderFactoryTest extends GroovyTestCase {
 
     void "test create UpdateQueryBuilder"() {
         SQLBuilderFactory factory = SQLBuilderFactory.getInstance()
-        def builder = factory.createUpdateQueryBuilder(SQLDialect.HSQLDB, classMetaData)
+        def builder = factory.createUpdateQueryBuilder(SQLDialect.HSQLDB, classMetaData, new Person())
         assert builder instanceof HSQLDBUpdateSqlBuilder
 
-        def mysqlBuilder = factory.createUpdateQueryBuilder(SQLDialect.MYSQL, classMetaData)
+        def mysqlBuilder = factory.createUpdateQueryBuilder(SQLDialect.MYSQL, classMetaData, new Person())
         assert mysqlBuilder instanceof MySqlUpdateSqlBuilder
     }
 }

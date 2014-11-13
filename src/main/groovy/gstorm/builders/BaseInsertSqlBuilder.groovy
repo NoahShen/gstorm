@@ -4,15 +4,10 @@ import gstorm.metadata.ClassMetaData
 
 abstract class BaseInsertSqlBuilder extends BaseSqlBuilder {
 
-    BaseInsertSqlBuilder(ClassMetaData classMetaData) {
+    def entity
+
+    BaseInsertSqlBuilder(ClassMetaData classMetaData, entity) {
         super(classMetaData)
-    }
-
-    String build() {
-        final fieldNames = classMetaData.fieldNames
-        final columns = fieldNames.join ", "
-        final placeholders = fieldNames.collect { "?" }.join(", ")
-
-        "INSERT INTO ${classMetaData.tableName} (${columns}) values (${placeholders})".toString()
+        this.entity = entity
     }
 }

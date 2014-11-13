@@ -33,19 +33,19 @@ class SQLBuilderFactory {
         }
     }
 
-    BaseInsertSqlBuilder createInsertQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseInsertSqlBuilder createInsertQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBInsertSqlBuilder(classMetaData)
+            new HSQLDBInsertSqlBuilder(classMetaData, entity)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlInsertSqlBuilder(classMetaData);
+            new MySqlInsertSqlBuilder(classMetaData, entity);
         }
     }
 
-    BaseUpdateSqlBuilder createUpdateQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData) {
+    BaseUpdateSqlBuilder createUpdateQueryBuilder(SQLDialect dialect, ClassMetaData classMetaData, entity) {
         if (dialect == SQLDialect.HSQLDB) {
-            new HSQLDBUpdateSqlBuilder(classMetaData)
+            new HSQLDBUpdateSqlBuilder(classMetaData, entity)
         } else if (dialect == SQLDialect.MYSQL) {
-            new MySqlUpdateSqlBuilder(classMetaData);
+            new MySqlUpdateSqlBuilder(classMetaData, entity);
         }
     }
 
