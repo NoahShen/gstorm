@@ -1,6 +1,7 @@
 package gstorm.builders.mysql
 
 import gstorm.builders.BaseSelectSqlBuilder
+import gstorm.builders.BuildResult
 import gstorm.metadata.ClassMetaData
 
 class MySqlSelectSqlBuilder extends BaseSelectSqlBuilder {
@@ -12,14 +13,23 @@ class MySqlSelectSqlBuilder extends BaseSelectSqlBuilder {
     @Override
     String build() {
         def fields = classMetaData.getAllFields()
-        def projections = fields.collect { "${it.columnName} as \"${it.name}\"" }.join(", ")
 
-//        StringBuilder query = new StringBuilder("SELECT ${projections} FROM ${classMetaData.tableName}")
+        StringBuilder query = new StringBuilder("SELECT ${projections} FROM ${classMetaData.tableName}")
+        query.toString()
+    }
+
+    BuildResult buildSqlAndValues() {
+        def fields = classMetaData.getAllFields()
+        def projections = fields.collect { "`${it.columnName}` as \"${it.name}\"" }.join(", ")
+
 
         def values = []
         def conditionSql = queryCondition.conditions.collect {
             MySqlConditions.generateConditionSql(it, classMetaData, values)
         }.join(" AND ")
+
+        def sql = "SELECT ${projections} FROM ${classMetaData.tableName} WHERE ${conditionSql}"
+        new BuildResult(sql: sql, values: values)
     }
 
 }
