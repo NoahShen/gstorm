@@ -16,14 +16,7 @@ class HSQLDBSelectSqlBuilder extends BaseSelectSqlBuilder {
         def projections = fields.collect { "${it.columnName} as \"${it.name}\"" }.join(", ")
 
         def values = []
-        def where = ""
-        if (queryCondition.conditions) {
-            def conditionSql = queryCondition.conditions.collect {
-                HSQLDBConditions.generateConditionSql(it, classMetaData, values)
-            }.join(" AND ")
-            where = " WHERE ${conditionSql}"
-        }
-
+        def where = HSQLDBStatementBuilders.generateQuerySql(queryCondition, classMetaData, values)
         def sql = "SELECT ${projections} FROM ${classMetaData.tableName}${where}"
         new BuildResult(sql: sql, values: values)
     }

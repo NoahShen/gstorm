@@ -9,10 +9,10 @@ class MySqlTypeMapper {
     public static final String DEFAULT_TYPE = "VARCHAR(255)"
 
     public static final Map<Class, String> DEFAULT_MAPPINGS = Collections.unmodifiableMap([
-            (int)                 : "NUMERIC",
-            (java.lang.Integer)   : "NUMERIC",
-            (long)                : "NUMERIC",
-            (java.lang.Long)      : "NUMERIC",
+            (int)                 : "INT(11)",
+            (java.lang.Integer)   : "INT(11)",
+            (long)                : "BIGINT(20)",
+            (java.lang.Long)      : "BIGINT(20)",
             (float)               : "DECIMAL(10,6)",
             (java.lang.Float)     : "DECIMAL(10,6)",
             (double)              : "DECIMAL(10,6)",

@@ -1,12 +1,43 @@
 package gstorm.builders.hsqldb
 
+import gstorm.builders.query.Query
 import gstorm.builders.query.condition.*
 import gstorm.metadata.ClassMetaData
 
 /**
  * Created by noahshen on 14-11-13.
  */
-class HSQLDBConditions {
+class HSQLDBStatementBuilders {
+
+
+    static String generateQuerySql(Query query, ClassMetaData metaData, List values) {
+        def sqlSegs = []
+        if (query.conditions) {
+            def where = query.conditions.collect {
+                generateConditionSql(it, metaData, values)
+            }.join(" AND ")
+            sqlSegs << "WHERE ${where}"
+        }
+        if (query.orderBy) {
+            def order = query.orderBy.collect {
+                generateOrderBySql(it, metaData)
+            }.join(", ")
+            sqlSegs << "ORDER BY ${order}"
+        }
+        if (query.offset > 0 || query.max > 0) {
+            sqlSegs << "LIMIT ${query.max <= 0 ? 0 : query.max} OFFSET ${query.offset}"
+        }
+        if (sqlSegs) {
+            return " " + sqlSegs.join(" ")
+        }
+        ""
+    }
+
+    static String generateOrderBySql(Query.Order order, ClassMetaData metaData) {
+        def columnName = metaData[order.property]?.columnName
+        def direction = order.direction
+        "${columnName} ${direction.name()}"
+    }
 
     static String generateConditionSql(Condition c, ClassMetaData metaData, List values) {
         if (c instanceof AndCondition) {

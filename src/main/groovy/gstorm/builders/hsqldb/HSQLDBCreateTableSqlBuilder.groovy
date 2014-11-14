@@ -1,6 +1,7 @@
 package gstorm.builders.hsqldb
 import gstorm.builders.BaseCreateTableSqlBuilder
 import gstorm.builders.BuildResult
+import gstorm.builders.mysql.MySqlTypeMapper
 import gstorm.metadata.ClassMetaData
 
 class HSQLDBCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
@@ -15,8 +16,7 @@ class HSQLDBCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
         def tableName = classMetaData.tableName
         def columnDefs = classMetaData.fields.collect { field -> "${field.columnName} ${HSQLDBTypeMapper.instance.getSqlType(field.clazz)}" }
 
-        columnDefs.add(0, "${classMetaData.idField.columnName} NUMERIC GENERATED ALWAYS AS IDENTITY PRIMARY KEY")
-
+        columnDefs.add(0, "${classMetaData.idField.columnName} ${MySqlTypeMapper.instance.getSqlType(classMetaData.idField.clazz)} GENERATED ALWAYS AS IDENTITY PRIMARY KEY")
         def sql = "CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefs.join(', ')})"
         new BuildResult(sql: sql, values: null)
     }

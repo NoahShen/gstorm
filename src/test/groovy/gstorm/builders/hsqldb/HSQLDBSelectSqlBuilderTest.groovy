@@ -52,5 +52,50 @@ class HSQLDBSelectSqlBuilderTest extends GroovyTestCase {
         assert result.values.size() == 1
         assert result.values[0] == 123
     }
+
+
+    void "test buildSqlAndValues Order by"() {
+        builder.eq("name", "Noah").gt("age", 10).order("age", "desc")
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? ORDER BY PersonAge DESC"
+        assert result.values.size() == 2
+        assert result.values[0] == "Noah"
+        assert result.values[1] == 10
+    }
+
+    void "test buildSqlAndValues Limit"() {
+        builder.eq("name", "Noah").gt("age", 10).max(10)
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? LIMIT 10 OFFSET 0"
+        assert result.values.size() == 2
+        assert result.values[0] == "Noah"
+        assert result.values[1] == 10
+    }
+
+    void "test buildSqlAndValues Limit Offset"() {
+        builder.eq("name", "Noah").gt("age", 10).offset(7)
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? LIMIT -1 OFFSET 7"
+        assert result.values.size() == 2
+        assert result.values[0] == "Noah"
+        assert result.values[1] == 10
+    }
+
+    void "test buildSqlAndValues Order by limit no where"() {
+        builder.order("age", "ASC").order("name").offset(7).max(17)
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person ORDER BY PersonAge ASC, PersonName DESC LIMIT 17 OFFSET 7"
+        assert result.values.size() == 0
+    }
+
+    void "test buildSqlAndValues Order by limit"() {
+        builder.eq("name", "Noah").gt("age", 10).order("age", "ASC").order("name").offset(7).max(17)
+        def result = builder.buildSqlAndValues()
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? ORDER BY PersonAge ASC, PersonName DESC LIMIT 17 OFFSET 7"
+        assert result.values.size() == 2
+        assert result.values[0] == "Noah"
+        assert result.values[1] == 10
+    }
+
 }
 

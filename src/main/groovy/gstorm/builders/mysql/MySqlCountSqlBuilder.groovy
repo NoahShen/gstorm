@@ -12,14 +12,7 @@ class MySqlCountSqlBuilder extends BaseCountSqlBuilder {
     @Override
     BuildResult buildSqlAndValues() {
         def values = []
-        def where = ""
-        if (queryCondition.conditions) {
-            def conditionSql = queryCondition.conditions.collect {
-                MySqlConditions.generateConditionSql(it, classMetaData, values)
-            }.join(" AND ")
-            where = " WHERE ${conditionSql}"
-        }
-
+        def where = MySqlStatementBuilders.generateQuerySql(queryCondition, classMetaData, values)
         def sql = "SELECT COUNT(1) as \"count\" FROM `${classMetaData.tableName}`${where}"
         new BuildResult(sql: sql, values: values)
     }

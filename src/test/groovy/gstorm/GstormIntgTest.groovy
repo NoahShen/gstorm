@@ -2,6 +2,8 @@ package gstorm
 import groovy.sql.Sql
 import models.Person
 
+import java.util.logging.Level
+
 class GstormIntgTest extends GroovyTestCase {
 
     Gstorm gstorm
@@ -10,6 +12,7 @@ class GstormIntgTest extends GroovyTestCase {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
+        gstorm.enableQueryLogging(Level.INFO)
         gstorm.stormify(Person, true)
     }
 
@@ -19,7 +22,7 @@ class GstormIntgTest extends GroovyTestCase {
     }
 
     // context : create table
-    void "test that a table is created for stormified class"() {
+    void "test that a table is created for enhanced class"() {
         assert sql.rows("select * from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'PERSON'").size() == 1
     }
 
@@ -90,7 +93,9 @@ class GstormIntgTest extends GroovyTestCase {
         new Person(name: 'Batman', age: 35).save()
         new Person(name: 'Spiderman', age: 30).save()
 
-        assert Person.where("age > 30").collect { it.name } == ["Batman"]
+        assert Person.where {
+            gt("age", 30)
+        }.collect { it.name } == ["Batman"]
     }
 
     // context : get all
@@ -124,7 +129,7 @@ class GstormIntgTest extends GroovyTestCase {
         def batman = new Person(name: 'Batman', age: 35).save()
         def spiderman = new Person(name: 'Spiderman', age: 30).save()
 
-        assert Person.count == 2    // as well as property
+        assert Person.count() == 2    // as well as property
     }
 
     void "test count with where"() {
@@ -133,6 +138,8 @@ class GstormIntgTest extends GroovyTestCase {
         def batman = new Person(name: 'Batman', age: 35).save()
         def spiderman = new Person(name: 'Spiderman', age: 30).save()
 
-        assert Person.count("age > 30") == 1    // as well as property
+        assert Person.count{
+            gte("age", 30)
+        } == 2
     }
 }

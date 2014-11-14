@@ -113,9 +113,9 @@ class ModelClassEnhancer {
         }
 
         modelMetaClass.delete = {
-            if (delegate."${idFieldName}") {
+            if (delegate."${idFieldName}" != null) {
                 def deleteSqlBuilder = sqlBuilderFactory.createDeleteSqlBuilder(this.dialect, metaData)
-                def buildResult = deleteSqlBuilder.idEq(delegate.id$).buildSqlAndValues()
+                def buildResult = deleteSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
                 sql.execute(buildResult.sql, buildResult.values)
             }
             delegate

@@ -96,4 +96,33 @@ class GstormDynamicFindTest extends GroovyTestCase {
         assert persons[0].name == "Superman"
 
     }
+
+    void "test that find by closure limit"() {
+        new Person(name: 'Spiderman', age: 30).save()
+        new Person(name: 'Batman', age: 31).save()
+        new Person(name: 'Superman', age: 32).save()
+        new Person(name: 'Ironman', age: 32).save()
+
+        List<Person> persons = Person.findByAge(32) {
+            order("name", "desc")
+            max(1)
+        }
+        assert persons.size() == 1
+        assert persons[0].name == "Superman"
+
+    }
+    void "test that find by closure limit offset"() {
+        new Person(name: 'Spiderman', age: 30).save()
+        new Person(name: 'Batman', age: 31).save()
+        new Person(name: 'Superman', age: 32).save()
+        new Person(name: 'Ironman', age: 32).save()
+
+        List<Person> persons = Person.findByAge(32) {
+            order("name", "desc")
+            offset(1)
+        }
+        assert persons.size() == 1
+        assert persons[0].name == "Ironman"
+
+    }
 }

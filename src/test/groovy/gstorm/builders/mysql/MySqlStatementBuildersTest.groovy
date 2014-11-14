@@ -1,12 +1,15 @@
-package gstorm.builders.hsqldb
+package gstorm.builders.mysql
+
 import gstorm.annotation.Column
+import gstorm.builders.query.Query
 import gstorm.builders.query.condition.*
 import gstorm.metadata.ClassMetaData
 import spock.lang.Specification
+
 /**
  * Created by noahshen on 14-11-6.
  */
-class HSQLDBConditionsTest extends Specification {
+class MySqlStatementBuildersTest extends Specification {
 
     class Person {
         Integer id
@@ -30,10 +33,10 @@ class HSQLDBConditionsTest extends Specification {
         Equals e = new Equals("name", "Noah")
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(e, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(e, classMetaData, values)
 
         then:
-        sql == "PersonName = ?"
+        sql == "`PersonName` = ?"
         values.size() == 1
         values[0] == "Noah"
     }
@@ -44,10 +47,10 @@ class HSQLDBConditionsTest extends Specification {
         In i = new In("name", ["Noah1", "Noah2", "Noah3"])
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(i, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(i, classMetaData, values)
 
         then:
-        sql == "PersonName IN (?, ?, ?)"
+        sql == "`PersonName` IN (?, ?, ?)"
         values.size() == 3
         values[0] == "Noah1"
         values[1] == "Noah2"
@@ -60,10 +63,10 @@ class HSQLDBConditionsTest extends Specification {
         NotIn i = new NotIn("name", ["Noah1", "Noah2", "Noah3"])
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(i, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(i, classMetaData, values)
 
         then:
-        sql == "PersonName NOT IN (?, ?, ?)"
+        sql == "`PersonName` NOT IN (?, ?, ?)"
         values.size() == 3
         values[0] == "Noah1"
         values[1] == "Noah2"
@@ -76,10 +79,10 @@ class HSQLDBConditionsTest extends Specification {
         Between between = new Between("age", 10, 20)
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(between, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(between, classMetaData, values)
 
         then:
-        sql == "PersonAge BETWEEN ? AND ?"
+        sql == "`PersonAge` BETWEEN ? AND ?"
         values.size() == 2
         values[0] == 10
         values[1] == 20
@@ -93,10 +96,10 @@ class HSQLDBConditionsTest extends Specification {
         AndCondition andCondition = new AndCondition(e, between)
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(andCondition, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(andCondition, classMetaData, values)
 
         then:
-        sql == "( PersonName = ? AND PersonAge BETWEEN ? AND ? )"
+        sql == "( `PersonName` = ? AND `PersonAge` BETWEEN ? AND ? )"
         values.size() == 3
         values[0] == "Noah"
         values[1] == 10
@@ -111,10 +114,10 @@ class HSQLDBConditionsTest extends Specification {
         OrCondition orCondition = new OrCondition(e, between)
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(orCondition, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(orCondition, classMetaData, values)
 
         then:
-        sql == "( PersonName = ? OR PersonAge BETWEEN ? AND ? )"
+        sql == "( `PersonName` = ? OR `PersonAge` BETWEEN ? AND ? )"
         values.size() == 3
         values[0] == "Noah"
         values[1] == 10
@@ -127,10 +130,10 @@ class HSQLDBConditionsTest extends Specification {
         EqualsProperty equalsProperty = new EqualsProperty("name", "age")
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(equalsProperty, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(equalsProperty, classMetaData, values)
 
         then:
-        sql == "PersonName = PersonAge"
+        sql == "`PersonName` = PersonAge"
         values.size() == 0
     }
 
@@ -141,10 +144,24 @@ class HSQLDBConditionsTest extends Specification {
         IsEmpty isEmpty = new IsEmpty("name")
 
         when:
-        def sql = HSQLDBConditions.generateConditionSql(isEmpty, classMetaData, values)
+        def sql = MySqlStatementBuilders.generateConditionSql(isEmpty, classMetaData, values)
 
         then:
-        sql == "PersonName = ''"
+        sql == "`PersonName` = ''"
+        values.size() == 0
+    }
+
+    def "test Order Condition"() {
+        setup:
+        def values = []
+        Query query = new Query()
+        query.orderBy << Query.Order.desc("name")
+
+        when:
+        def sql = MySqlStatementBuilders.generateQuerySql(query, classMetaData, values)
+
+        then:
+        sql == "ORDER BY `PersonName` DESC"
         values.size() == 0
     }
 

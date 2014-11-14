@@ -33,12 +33,12 @@ abstract class BaseWhereableSqlBuilder extends BaseSqlBuilder {
     }
 
     BaseWhereableSqlBuilder order(String propertyName) {
-        queryCondition.orderBy << new Query.Order(propertyName)
+        queryCondition.orderBy << Query.Order.desc(propertyName)
         this
     }
 
     BaseWhereableSqlBuilder order(String propertyName, String direction) {
-        queryCondition.orderBy << new Query.Order(propertyName, Query.Order.Direction.valueOf(direction.toUpperCase()))
+        queryCondition.orderBy << Query.Order."${direction.toLowerCase()}"(propertyName)
         this
     }
 

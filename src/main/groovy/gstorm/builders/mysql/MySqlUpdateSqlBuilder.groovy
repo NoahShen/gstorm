@@ -19,14 +19,7 @@ class MySqlUpdateSqlBuilder extends BaseUpdateSqlBuilder {
             updateFieldPlaceHolder << "`${it.columnName}` = ?"
             values << entity.getProperty(it.name)
         }
-        def where = ""
-        if (queryCondition.conditions) {
-            def conditionSql = queryCondition.conditions.collect {
-                MySqlConditions.generateConditionSql(it, classMetaData, values)
-            }.join(" AND ")
-            where = " WHERE ${conditionSql}"
-        }
-
+        def where = MySqlStatementBuilders.generateQuerySql(queryCondition, classMetaData, values)
         def sql = "UPDATE `${classMetaData.tableName}` SET ${updateFieldPlaceHolder.join(", ")}${where}"
         new BuildResult(sql: sql, values: values)
     }
