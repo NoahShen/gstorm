@@ -5,4 +5,5 @@ class ClassWithNumbers {
     int age
     long points
     float percentage
+    BigDecimal money
 }

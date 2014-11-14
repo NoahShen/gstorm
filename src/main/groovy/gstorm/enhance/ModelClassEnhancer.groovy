@@ -96,30 +96,24 @@ class ModelClassEnhancer {
         final modelMetaClass = metaData.modelClass.metaClass
         SQLBuilderFactory sqlBuilderFactory = SQLBuilderFactory.getInstance()
 
-
-        if (!metaData.idField) { // add id if not already defined
-            modelMetaClass.id = null
-        }
-
-        modelMetaClass.getId$ = { -> delegate.getProperty(metaData.idFieldName ?: 'id') }
-        modelMetaClass.setId$ = { value -> delegate.setProperty(metaData.idFieldName ?: 'id', value) }
-
+        String idFieldName = metaData.idFieldName;
         modelMetaClass.save = {
-            if (delegate.id$ == null) {
+            if (delegate."${idFieldName}" == null) {
                 def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, delegate)
                 def buildResult = insertSqlBuilder.buildSqlAndValues()
                 final generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
-                delegate.id$ = generatedIds[0][0] // pretty stupid way to extract it
+                def keyId = generatedIds[0][0] // pretty stupid way to extract it
+                delegate."${idFieldName}" = keyId
             } else {
                 def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, delegate)
-                def buildResult = updateSqlBuilder.idEq(delegate.id$).buildSqlAndValues()
+                def buildResult = updateSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
                 sql.executeUpdate(buildResult.sql, buildResult.values)
             }
             delegate
         }
 
         modelMetaClass.delete = {
-            if (delegate.id$ != null) {
+            if (delegate."${idFieldName}") {
                 def deleteSqlBuilder = sqlBuilderFactory.createDeleteSqlBuilder(this.dialect, metaData)
                 def buildResult = deleteSqlBuilder.idEq(delegate.id$).buildSqlAndValues()
                 sql.execute(buildResult.sql, buildResult.values)

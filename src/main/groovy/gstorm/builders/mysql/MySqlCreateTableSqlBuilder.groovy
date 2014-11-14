@@ -12,10 +12,10 @@ class MySqlCreateTableSqlBuilder extends BaseCreateTableSqlBuilder {
     @Override
     BuildResult buildSqlAndValues() {
         def tableName = classMetaData.tableName
-        def columnDefs = classMetaData.fields.collect { field -> "`${field.columnName}` ${field.columnType}" }
+        def columnDefs = classMetaData.fields.collect { field -> "`${field.columnName}` ${MySqlTypeMapper.instance.getSqlType(field.clazz)}" }
 
-        columnDefs.add(0, "${classMetaData.idFieldName ?: '`ID`'} INT(11) NOT NULL AUTO_INCREMENT")
-        columnDefs.add("PRIMARY KEY (${classMetaData.idFieldName ?: '`ID`'})")
+        columnDefs.add(0, "`${classMetaData.idField.columnName}` INT(11) NOT NULL AUTO_INCREMENT")
+        columnDefs.add("PRIMARY KEY (`${classMetaData.idField.columnName}`)")
 
         def sql = "CREATE TABLE IF NOT EXISTS `${tableName}` (${columnDefs.join(', ')})"
         new BuildResult(sql: sql, values: null)

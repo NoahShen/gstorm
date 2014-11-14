@@ -1,6 +1,7 @@
 package gstorm.builders.mysql
 
 import gstorm.annotation.Column
+import gstorm.builders.query.Query
 import gstorm.builders.query.condition.*
 import gstorm.metadata.ClassMetaData
 import spock.lang.Specification
@@ -147,6 +148,19 @@ class MySqlConditionsTest extends Specification {
 
         then:
         sql == "`PersonName` = ''"
+        values.size() == 0
+    }
+
+    def "test Order Condition"() {
+        setup:
+        def values = []
+        Query.Order order = Query.Order.desc("age")
+
+        when:
+        def sql = MySqlConditions.generateConditionSql(order, classMetaData, values)
+
+        then:
+        sql == "`order` = ''"
         values.size() == 0
     }
 

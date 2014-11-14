@@ -19,7 +19,7 @@ class HSQLDBCreateTableSqlBuilderTest extends GroovyTestCase {
         builder = new HSQLDBCreateTableSqlBuilder(classMetaData)
     }
 
-    void "test generate mysql create sql"() {
+    void "test generate hsqldb create sql"() {
         def result = builder.buildSqlAndValues()
         assert result.sql == "CREATE TABLE IF NOT EXISTS Person (ID NUMERIC GENERATED ALWAYS AS IDENTITY PRIMARY KEY, name VARCHAR(255), age NUMERIC)"
     }

@@ -3,6 +3,8 @@ package gstorm
 import groovy.sql.Sql
 import models.Person
 
+import java.util.logging.Level
+
 class GstormDynamicFindTest extends GroovyTestCase {
 
     Gstorm gstorm
@@ -11,6 +13,7 @@ class GstormDynamicFindTest extends GroovyTestCase {
     void setUp() {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
+        gstorm.enableQueryLogging(Level.INFO)
         gstorm.stormify(Person, true)
     }
 
@@ -58,11 +61,11 @@ class GstormDynamicFindTest extends GroovyTestCase {
         new Person(name: 'Superman', age: 32).save()
         new Person(name: 'Ironman', age: 32).save()
 
-        def person = Person.findFirstByAge(32)
+        Person person = Person.findFirstByAge(32)
         assert person
         assert person.name == "Superman"
 
-        def person2 = Person.findFirstByAge(100)
+        Person person2 = Person.findFirstByAge(100)
         assert !person2
 
     }
@@ -74,10 +77,23 @@ class GstormDynamicFindTest extends GroovyTestCase {
         new Person(name: 'Superman', age: 32).save()
         new Person(name: 'Ironman', age: 32).save()
 
-        def persons = Person.findByNameAndAge('Superman', 32)
+        List<Person> persons = Person.findByNameAndAge('Superman', 32)
         assert persons.size() == 1
         assert persons*.name == ["Superman"]
 
     }
 
+    void "test that find by closure"() {
+        new Person(name: 'Spiderman', age: 30).save()
+        new Person(name: 'Batman', age: 31).save()
+        new Person(name: 'Superman', age: 32).save()
+        new Person(name: 'Ironman', age: 32).save()
+
+        List<Person> persons = Person.findByAge(32) {
+            order("name", "desc")
+        }
+        assert persons.size() == 2
+        assert persons[0].name == "Superman"
+
+    }
 }

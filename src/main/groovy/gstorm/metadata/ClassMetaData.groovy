@@ -18,7 +18,7 @@ class ClassMetaData {
         this.tableName = extractTableName(modelClass)
         this.idField = getIdFieldOfClass(modelClass)
         this.fields = getOtherFieldsOfClass(modelClass)
-        this.allFields = getAllFieldsOfClass(modelClass)
+        this.allFields = getAllFieldsOfClass(idField, fields)
         this._fieldsCache = this.allFields.collectEntries { fieldMetaData -> [fieldMetaData.name, fieldMetaData] }
     }
 
@@ -52,14 +52,20 @@ class ClassMetaData {
                 .findAll { !it.isAnnotationPresent(Id) && it.name != "id" }
                 .collect { field -> new FieldMetaData(field) }
     }
-    private List<FieldMetaData> getAllFieldsOfClass(Class modelClass) {
-        fieldsDeclaredIn(modelClass).collect { field -> new FieldMetaData(field) }
+
+    private List<FieldMetaData> getAllFieldsOfClass(FieldMetaData idField, List otherFields) {
+        def allFields = [idField] + otherFields
+        allFields
     }
 
     private FieldMetaData getIdFieldOfClass(Class modelClass) {
         def idField = fieldsDeclaredIn(modelClass).find { it.isAnnotationPresent(Id) || it.name == "id" }
-        //TODO id
-        idField ? new FieldMetaData(idField) : new FieldMetaData(Integer, "id", "ID", "NUMERIC")
+        if (idField) {
+            return new FieldMetaData(idField)
+        }
+        // add new property
+        modelClass.metaClass.id = null
+        new FieldMetaData(Integer, "id", "ID")
     }
 
     private List<Field> fieldsDeclaredIn(Class modelClass) {

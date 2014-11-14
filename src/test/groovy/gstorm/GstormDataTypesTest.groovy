@@ -17,7 +17,7 @@ class GstormDataTypesTest extends GroovyTestCase {
         gstorm.enableQueryLogging(Level.INFO)
         gstorm.stormify(ClassWithDates, true)
         gstorm.stormify(ClassWithNumbers, true)
-        dateFormat = new SimpleDateFormat("d/M/yyyy")
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd")
     }
 
     void tearDown() {
@@ -27,16 +27,16 @@ class GstormDataTypesTest extends GroovyTestCase {
 
     void "test if Date can be saved"() {
         def cwd = new ClassWithDates(name: "newborn", dateOfBirth: new Date()).save()
-
-        assert ClassWithDates.get(cwd.id).dateOfBirth instanceof Date
+        ClassWithDates result = ClassWithDates.get(cwd.id)
+        assert result.dateOfBirth instanceof Date
     }
 
     void "test if Date can be updated"() {
-        def cwd = new ClassWithDates(name: "nicedate", dateOfBirth: dateFormat.parse("20/10/2010")).save()
-        cwd.dateOfBirth = dateFormat.parse("20/11/2011")
+        def cwd = new ClassWithDates(name: "nicedate", dateOfBirth: dateFormat.parse("2014-07-07")).save()
+        cwd.dateOfBirth = dateFormat.parse("2014-08-07")
         cwd.save()
 
-        assert ClassWithDates.get(cwd.id).dateOfBirth == dateFormat.parse("20/11/2011")
+        assert ClassWithDates.get(cwd.id).dateOfBirth == dateFormat.parse("2014-08-07")
     }
 
     void "test if Numbers can be saved"() {
@@ -56,14 +56,21 @@ class GstormDataTypesTest extends GroovyTestCase {
         final updated = ClassWithNumbers.get(cwn.id)
         assert updated.age == 12
         assert updated.points == 98765431123456789
+        assert ClassWithNumbers.count() == 1
     }
 
-    void "test if floats are store as string"() {
+    void "test if floats are stored"() {
         def cwn = new ClassWithNumbers(name: "test", age: 1, percentage: 10.12).save()
 
-        final retrievedPercentage = ClassWithNumbers.get(cwn.id).percentage
-        assert retrievedPercentage == "10.12"
-        assert retrievedPercentage.class == String
+        ClassWithNumbers classWithNumbers = ClassWithNumbers.get(cwn.id)
+        assert classWithNumbers.percentage == 10.12f
+    }
+
+    void "test if bigdecimal are stored"() {
+        def cwn = new ClassWithNumbers(name: "test", age: 1, percentage: 10.12, money: 100.87G).save()
+
+        ClassWithNumbers classWithNumbers = ClassWithNumbers.get(cwn.id)
+        assert classWithNumbers.money == 100.87
     }
 
 }
