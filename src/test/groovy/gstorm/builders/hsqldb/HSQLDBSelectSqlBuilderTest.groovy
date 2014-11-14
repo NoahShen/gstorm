@@ -75,7 +75,7 @@ class HSQLDBSelectSqlBuilderTest extends GroovyTestCase {
     void "test buildSqlAndValues Limit Offset"() {
         builder.eq("name", "Noah").gt("age", 10).offset(7)
         def result = builder.buildSqlAndValues()
-        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? LIMIT -1 OFFSET 7"
+        assert result.sql == "SELECT PersonID as \"id\", PersonName as \"name\", PersonAge as \"age\" FROM Person WHERE PersonName = ? AND PersonAge > ? LIMIT 0 OFFSET 7"
         assert result.values.size() == 2
         assert result.values[0] == "Noah"
         assert result.values[1] == 10

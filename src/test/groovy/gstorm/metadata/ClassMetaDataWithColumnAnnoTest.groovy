@@ -30,16 +30,13 @@ class ClassMetaDataWithColumnAnnoTest extends GroovyTestCase {
     }
 
     void "test persistent field types"() {
-        assert metadata.fields*.type == [String]
+        assert metadata.fields*.clazz == [String]
     }
 
     void "test column names"() {
         assert metadata.fields*.columnName == ["fullName"]
     }
 
-    void "test column types"() {
-        assert metadata.fields*.columnType == ["VARCHAR(255)"]
-    }
 
     void "test map like access to field"() {
         assert metadata["name"].columnName == "fullName"

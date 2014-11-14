@@ -161,7 +161,7 @@ class MySqlStatementBuildersTest extends Specification {
         def sql = MySqlStatementBuilders.generateQuerySql(query, classMetaData, values)
 
         then:
-        sql == "ORDER BY `PersonName` DESC"
+        sql == " ORDER BY `PersonName` DESC"
         values.size() == 0
     }
 

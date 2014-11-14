@@ -56,7 +56,6 @@ class GstormDataTypesTest extends GroovyTestCase {
         final updated = ClassWithNumbers.get(cwn.id)
         assert updated.age == 12
         assert updated.points == 98765431123456789
-        assert ClassWithNumbers.count() == 1
     }
 
     void "test if floats are stored"() {

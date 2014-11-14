@@ -31,20 +31,17 @@ class ClassMetaDataTest extends GroovyTestCase {
     }
 
     void "test persistent field types"() {
-        assert metadata.fields*.type == [String, Object, Date]
+        assert metadata.fields*.clazz == [String, Object, Date]
     }
 
     void "test column names"() {
         assert metadata.fields*.columnName == ["name", "description", "addedOn"]
     }
 
-    void "test column types"() {
-        assert metadata.fields*.columnType == ["VARCHAR(255)", "VARCHAR(255)", "TIMESTAMP"]
-    }
 
     void "test map like access to field"() {
         assert metadata["description"].columnName == "description"
-        assert metadata["description"].type == Object
+        assert metadata["description"].clazz == Object
     }
 
 }

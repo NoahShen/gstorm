@@ -11,7 +11,7 @@ class GstormMySqlIntgLocalTest extends GroovyTestCase {
     Sql sql
 
     void setUp() {
-        sql = Sql.newInstance("jdbc:MySQL://192.168.7.104:3306/DianPingBA_FSSettle", "aspnet_dianping", "dp!@OpQW34bn", "com.mysql.jdbc.Driver")
+        sql = Sql.newInstance("jdbc:MySQL://localhost:3306/test", "user", "123", "com.mysql.jdbc.Driver")
         gstorm = new Gstorm(sql, SQLDialect.MYSQL)
         gstorm.enableQueryLogging(Level.INFO)
         gstorm.stormify(Person, true)
