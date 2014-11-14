@@ -24,7 +24,7 @@ class MySqlStatementBuilders {
             sqlSegs << "ORDER BY ${order}"
         }
         if (query.offset > 0 || query.max > 0) {
-            sqlSegs << "LIMIT ${query.offset}, ${query.max}"
+            sqlSegs << "LIMIT ${query.max <= 0 ? 18446744073709551615 : query.max} OFFSET ${query.offset}"
         }
         if (sqlSegs){
             return " " + sqlSegs.join(" ")
