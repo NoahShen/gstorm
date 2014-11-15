@@ -1,5 +1,7 @@
 package gstorm.metadata
 
+import gstorm.annotation.AutoDateCreated
+import gstorm.annotation.AutoLastUpdated
 import gstorm.annotation.Id
 import gstorm.annotation.Table
 
@@ -9,6 +11,9 @@ class ClassMetaData {
     final Class modelClass
     final String tableName
     final FieldMetaData idField
+    final FieldMetaData dateCreatedField
+    final FieldMetaData lastUpdatedField
+
     private final List<FieldMetaData> fields
     private final List<FieldMetaData> allFields
     private Map _fieldsCache        // just to avoid iterating over list of fields and finding by name.
@@ -17,7 +22,10 @@ class ClassMetaData {
         this.modelClass = modelClass
         this.tableName = extractTableName(modelClass)
         this.idField = getIdFieldOfClass(modelClass)
+        this.dateCreatedField = getCreatedDateField(modelClass)
+        this.lastUpdatedField = getUpdatedDateField(modelClass)
         this.fields = getOtherFieldsOfClass(modelClass)
+
         this.allFields = getAllFieldsOfClass(idField, fields)
         this._fieldsCache = this.allFields.collectEntries { fieldMetaData -> [fieldMetaData.name, fieldMetaData] }
     }
@@ -70,6 +78,33 @@ class ClassMetaData {
 
     private List<Field> fieldsDeclaredIn(Class modelClass) {
         modelClass.declaredFields.findAll { !it.synthetic }
+    }
+
+    private FieldMetaData getCreatedDateField(Class modelClass) {
+        def field = fieldsDeclaredIn(modelClass).find {
+            AutoDateCreated dateCreatedAnno = it.getAnnotation(AutoDateCreated)
+            if (dateCreatedAnno && dateCreatedAnno.autoTimestamp()) {
+                return it
+            }
+            if (it.name == "dateCreated" && (!dateCreatedAnno || dateCreatedAnno.autoTimestamp())) {
+                return it
+            }
+        }
+        field ? new FieldMetaData(field) : null
+
+    }
+
+    private FieldMetaData getUpdatedDateField(Class modelClass) {
+        def field = fieldsDeclaredIn(modelClass).find {
+            AutoLastUpdated lastUpdatedAnno = it.getAnnotation(AutoLastUpdated)
+            if (lastUpdatedAnno && lastUpdatedAnno.autoTimestamp()) {
+                return it
+            }
+            if (it.name == "lastUpdated" && (!lastUpdatedAnno || lastUpdatedAnno.autoTimestamp())) {
+                return it
+            }
+        }
+        field ? new FieldMetaData(field) : null
     }
 
 }

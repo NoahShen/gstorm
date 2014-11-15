@@ -12,7 +12,7 @@ class ModelClassEnhancer {
 
     final DynamicFindEnhancer dynamicFindEnhancer = new DynamicFindEnhancer()
 
-    ModelClassEnhancer(ClassMetaData classMetaData, Sql sql, SQLDialect dialect = SQLDialect.HSQLDB) {
+    ModelClassEnhancer(ClassMetaData classMetaData, Sql sql, SQLDialect dialect) {
         this.metaData = classMetaData
         this.sql = sql
         this.dialect = dialect
@@ -99,12 +99,14 @@ class ModelClassEnhancer {
         String idFieldName = metaData.idFieldName;
         modelMetaClass.save = {
             if (delegate."${idFieldName}" == null) {
+                autoTimestampWhenInsert(delegate, metaData)
                 def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, delegate)
                 def buildResult = insertSqlBuilder.buildSqlAndValues()
                 final generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
                 def keyId = generatedIds[0][0] // pretty stupid way to extract it
                 delegate."${idFieldName}" = keyId
             } else {
+                autoTimestampWhenUpdate(delegate, metaData)
                 def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, delegate)
                 def buildResult = updateSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
                 sql.executeUpdate(buildResult.sql, buildResult.values)
@@ -122,4 +124,18 @@ class ModelClassEnhancer {
         }
     }
 
+    private void autoTimestampWhenInsert(def entity, ClassMetaData classMetaData) {
+        if (classMetaData.dateCreatedField) {
+            entity."${classMetaData.dateCreatedField.name}" = new Date()
+        }
+        if (classMetaData.lastUpdatedField) {
+            entity."${classMetaData.lastUpdatedField.name}" = new Date()
+        }
+    }
+
+    private void autoTimestampWhenUpdate(def entity, ClassMetaData classMetaData) {
+        if (classMetaData.lastUpdatedField) {
+            entity."${classMetaData.lastUpdatedField.name}" = new Date()
+        }
+    }
 }
