@@ -41,8 +41,9 @@ class ModelClassEnhancer {
 
         modelMetaClass.static.where = where
         modelMetaClass.static.findWhere = where
+        modelMetaClass.static.find = where
 
-        modelMetaClass.static.findFirstWhere = { Closure whereClosure ->
+        def firstWhere = { Closure whereClosure ->
             if (!whereClosure) {
                 throw new IllegalArgumentException("no whereClosure")
             }
@@ -52,6 +53,9 @@ class ModelClassEnhancer {
             def buildResult = selectSqlBuilder.buildSqlAndValues()
             sql.firstRow(buildResult.sql, buildResult.values)
         }
+
+        modelMetaClass.static.findFirst = firstWhere
+        modelMetaClass.static.findFirstWhere = firstWhere
 
         def getAll = {
             def selectSqlBuilder = sqlBuilderFactory.createSelectSqlBuilder(this.dialect, metaData)
@@ -99,28 +103,40 @@ class ModelClassEnhancer {
         String idFieldName = metaData.idFieldName;
         modelMetaClass.save = {
             if (delegate."${idFieldName}" == null) {
+                fireEventMethod(delegate, "beforeInsert")
                 autoTimestampWhenInsert(delegate, metaData)
                 def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, delegate)
                 def buildResult = insertSqlBuilder.buildSqlAndValues()
                 final generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
                 def keyId = generatedIds[0][0] // pretty stupid way to extract it
                 delegate."${idFieldName}" = keyId
+                fireEventMethod(delegate, "afterInsert")
             } else {
+                fireEventMethod(delegate, "beforeUpdate")
                 autoTimestampWhenUpdate(delegate, metaData)
                 def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, delegate)
                 def buildResult = updateSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
                 sql.executeUpdate(buildResult.sql, buildResult.values)
+                fireEventMethod(delegate, "afterUpdate")
             }
             delegate
         }
 
         modelMetaClass.delete = {
             if (delegate."${idFieldName}" != null) {
+                fireEventMethod(delegate, "beforeDelete")
                 def deleteSqlBuilder = sqlBuilderFactory.createDeleteSqlBuilder(this.dialect, metaData)
                 def buildResult = deleteSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
                 sql.execute(buildResult.sql, buildResult.values)
+                fireEventMethod(delegate, "afterDelete")
             }
             delegate
+        }
+    }
+
+    private void fireEventMethod(def entity, String method) {
+        if (entity.metaClass.respondsTo(entity, method)) {
+            entity."$method"()
         }
     }
 
