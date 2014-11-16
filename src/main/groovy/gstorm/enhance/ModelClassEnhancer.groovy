@@ -102,37 +102,60 @@ class ModelClassEnhancer {
 
         String idFieldName = metaData.idFieldName;
         modelMetaClass.save = {
-            if (delegate."${idFieldName}" == null) {
-                fireEventMethod(delegate, "beforeInsert")
-                autoTimestampWhenInsert(delegate, metaData)
-                def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, delegate)
+            def entity = delegate
+            if (entity."${idFieldName}" == null) {
+                fireEventMethod(entity, "beforeInsert")
+                autoTimestampWhenInsert(entity, metaData)
+                if (metaData.versionField) {
+                    entity."${metaData.versionField.name}" = 1
+                }
+                def insertSqlBuilder = sqlBuilderFactory.createInsertSqlBuilder(this.dialect, metaData, entity)
                 def buildResult = insertSqlBuilder.buildSqlAndValues()
-                final generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
+                def generatedIds = sql.executeInsert(buildResult.sql, buildResult.values)
                 def keyId = generatedIds[0][0] // pretty stupid way to extract it
-                delegate."${idFieldName}" = keyId
-                fireEventMethod(delegate, "afterInsert")
+                entity."${idFieldName}" = keyId
+                fireEventMethod(entity, "afterInsert")
             } else {
-                fireEventMethod(delegate, "beforeUpdate")
-                autoTimestampWhenUpdate(delegate, metaData)
-                def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, delegate)
-                def buildResult = updateSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
-                sql.executeUpdate(buildResult.sql, buildResult.values)
-                fireEventMethod(delegate, "afterUpdate")
+                fireEventMethod(entity, "beforeUpdate")
+                autoTimestampWhenUpdate(entity, metaData)
+                Integer oldVersion = null
+                if (metaData.versionField) {
+                    oldVersion = entity."${metaData.versionField.name}"
+                    entity."${metaData.versionField.name}"++
+                }
+                def updateSqlBuilder = sqlBuilderFactory.createUpdateSqlBuilder(this.dialect, metaData, entity)
+                updateSqlBuilder.idEq(entity."${idFieldName}")
+                if (metaData.versionField && oldVersion != null) {
+                    updateSqlBuilder.eq(metaData.versionField.name, oldVersion)
+                }
+                def buildResult = updateSqlBuilder.buildSqlAndValues()
+                Integer updatedRow = sql.executeUpdate(buildResult.sql, buildResult.values)
+                if (updatedRow <= 0) {
+                    // update failed, roll back old version
+                    if (metaData.versionField && oldVersion != null) {
+                        entity."${metaData.versionField.name}" = oldVersion
+                    }
+                    // not invoke afterUpdate
+                    return entity
+                }
+                fireEventMethod(entity, "afterUpdate")
             }
-            delegate
+            entity
         }
 
         modelMetaClass.delete = {
-            if (delegate."${idFieldName}" != null) {
-                fireEventMethod(delegate, "beforeDelete")
+            def entity = delegate
+            if (entity."${idFieldName}" != null) {
+                fireEventMethod(entity, "beforeDelete")
                 def deleteSqlBuilder = sqlBuilderFactory.createDeleteSqlBuilder(this.dialect, metaData)
-                def buildResult = deleteSqlBuilder.idEq(delegate."${idFieldName}").buildSqlAndValues()
+                def buildResult = deleteSqlBuilder.idEq(entity."${idFieldName}").buildSqlAndValues()
                 sql.execute(buildResult.sql, buildResult.values)
-                fireEventMethod(delegate, "afterDelete")
+                fireEventMethod(entity, "afterDelete")
             }
-            delegate
+            entity
         }
     }
+
 
     private void fireEventMethod(def entity, String method) {
         if (entity.metaClass.respondsTo(entity, method)) {

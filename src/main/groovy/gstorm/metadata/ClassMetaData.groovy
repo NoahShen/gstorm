@@ -13,6 +13,7 @@ class ClassMetaData {
     final FieldMetaData idField
     final FieldMetaData dateCreatedField
     final FieldMetaData lastUpdatedField
+    final FieldMetaData versionField
 
     private final List<FieldMetaData> fields
     private final List<FieldMetaData> allFields
@@ -24,6 +25,7 @@ class ClassMetaData {
         this.idField = getIdFieldOfClass(modelClass)
         this.dateCreatedField = getCreatedDateField(modelClass)
         this.lastUpdatedField = getUpdatedDateField(modelClass)
+        this.versionField = getVersionFieldOfClass(modelClass)
         this.fields = getOtherFieldsOfClass(modelClass)
 
         this.allFields = getAllFieldsOfClass(idField, fields)
@@ -101,6 +103,15 @@ class ClassMetaData {
                 return it
             }
             if (it.name == "lastUpdated" && (!lastUpdatedAnno || lastUpdatedAnno.autoTimestamp())) {
+                return it
+            }
+        }
+        field ? new FieldMetaData(field) : null
+    }
+
+    private FieldMetaData getVersionFieldOfClass(Class modelClass) {
+        def field = fieldsDeclaredIn(modelClass).find {
+            if (it.name == "version") {
                 return it
             }
         }
