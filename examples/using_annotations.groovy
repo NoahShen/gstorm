@@ -8,11 +8,13 @@
 @Grab('org.hsqldb:hsqldb:2.3.2')
 import groovy.sql.*
 import gstorm.*
+import gstorm.annotation.Id
+import gstorm.annotation.Table
 
 // using sql object explicitly to create Gstorm instance, this can be any other jdbc driver
 def sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbcDriver")
 
-@Table("Employees") // if have a different table name
+@Table(name = "Employees") // if have a different table name
 class Employee {
     @Id Integer empId // annotate Id if you dont want want implicit id
     String name
