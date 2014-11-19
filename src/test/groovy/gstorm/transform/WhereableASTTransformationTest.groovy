@@ -1,5 +1,6 @@
 package gstorm.transform
 
+import models.Person
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.tools.ast.TransformTestHelper
 
@@ -13,6 +14,7 @@ class WhereableASTTransformationTest extends GroovyTestCase {
 
 
     void testVisit() {
+        Person p = new Person()
         def file = new File('/Users/noahshen/workspace/gstorm/PersonService.groovy')
         assert file.exists()
 

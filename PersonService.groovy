@@ -1,3 +1,4 @@
+package gstorm
 import models.Person
 
 /**
@@ -7,7 +8,7 @@ class PersonService {
 
     List<Person> findPerson(Integer startAge) {
         Person.find {
-            age > startAge
+            age > 1
         }
     }
 }
