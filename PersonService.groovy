@@ -8,7 +8,10 @@ class PersonService {
 
     List<Person> findPerson(Integer startAge) {
         Person.find {
-            age > 1
+            and {
+                age = 1
+            }
+            age > 1 && name == "Noah"
         }
     }
 }

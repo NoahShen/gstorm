@@ -23,8 +23,8 @@ class WhereableASTTransformationTest extends GroovyTestCase {
 
     void testVisit() {
         new Person(name:"Noah", age: 27).save()
-//        def file = new File('/Users/noahshen/workspace/gstorm/PersonService.groovy')
-        def file = new File('/Users/noahshen/Documents/my_ws/gstorm/PersonService.groovy')
+        def file = new File('/Users/noahshen/workspace/gstorm/PersonService.groovy')
+//        def file = new File('/Users/noahshen/Documents/my_ws/gstorm/PersonService.groovy')
         assert file.exists()
 
         def invoker = new TransformTestHelper(new WhereableASTTransformation(), CompilePhase.CONVERSION)
