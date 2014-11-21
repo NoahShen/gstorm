@@ -22,24 +22,33 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             "getCount"
     ]
 
-    static final Map OPERATOR_TO_WHEREABLE_METHOD_MAP = [
+    static final Set BASIC_OPERATOR = ["eq", "nq", "gt", "lt", "gte", "lte"]
+
+    static final Map WHEREABLE_OPERATOR = [
             "==": "eq",
-            "!=": "ne",
+            "!=": "nq",
             ">" : "gt",
             "<" : "lt",
-            ">=": "ge",
-            "<=": "le",
+            ">=": "gte",
+            "<=": "lte",
             "in": "inList"
     ]
 
-    static final Map SUB_CONDITION_OPERATOR_MAP = [
+    static final Map PROPERTY_WHEREABLE_OPERATOR = [
+            "eq": "eqProperty",
+            "nq": "neProperty",
+            "gt" : "gtProperty",
+            "lt" : "ltProperty",
+            "gte": "geProperty",
+            "lte": "leProperty"
+    ]
+
+    static final Map MULTI_CONDITION_OPERATOR_MAP = [
             "&&": "and",
             "||": "or"
     ]
 
-
     SourceUnit sourceUnit
-
 
     WhereableTransformer(SourceUnit sourceUnit) {
         this.sourceUnit = sourceUnit
@@ -50,35 +59,6 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
         return this.sourceUnit
     }
 
-    @Override
-    void visitMethod(MethodNode node) {
-        super.visitMethod(node)
-    }
-
-    @Override
-    void visitField(FieldNode node) {
-        super.visitField(node)
-    }
-
-    @Override
-    void visitClosureExpression(ClosureExpression expression) {
-        super.visitClosureExpression(expression)
-    }
-
-    @Override
-    void visitStaticMethodCallExpression(StaticMethodCallExpression call) {
-        super.visitStaticMethodCallExpression(call)
-    }
-
-    @Override
-    void visitImports(ModuleNode node) {
-        super.visitImports(node)
-    }
-
-    @Override
-    void visitClass(ClassNode node) {
-        super.visitClass(node)
-    }
 
     @Override
     void visitMethodCallExpression(MethodCallExpression call) {
@@ -122,28 +102,149 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             if (statement instanceof ExpressionStatement) {
                 if (statement.expression instanceof BinaryExpression) {
                     BinaryExpression binaryExpression = statement.expression
-                    String operation = binaryExpression.operation.text
-                    if (SUB_CONDITION_OPERATOR_MAP.containsKey(operation)) {
-                        ExpressionStatement subCondtionStatement = createSubConditionStatement(operation, binaryExpression)
-                    }
-
+                    addNewStatement(binaryExpression, newStatement, propertyNames)
                 }
             }
         }
     }
 
-    ExpressionStatement createSubConditionStatement(String operation, BinaryExpression binaryExpression) {
-        String conditionMethod = SUB_CONDITION_OPERATOR_MAP.get(operation)
+    private void addNewStatement(Expression expression,
+                                 BlockStatement newStatement,
+                                 List<String> propertyNames) {
+        if (!(expression instanceof BinaryExpression)) {
+            super.addError("unknown groovy-style whereable", expression)
+            return
+        }
+        if (MULTI_CONDITION_OPERATOR_MAP.containsKey(expression.operation.text)) {
+            addMultiConditionStatement(expression, newStatement, propertyNames)
+        } else {
+            addConditionStatement(expression, newStatement, propertyNames)
+        }
+    }
 
-        new ExpressionStatement(
+    private void addConditionStatement(BinaryExpression expression, BlockStatement newStatement, List<String> propertyNames) {
+        String method = WHEREABLE_OPERATOR[expression.operation.text]
+        if (!method) {
+            super.addError("unknown groovy-style whereable", expression)
+            return
+        }
+        switch (method) {
+            case BASIC_OPERATOR:
+                addBasicCondition(method, expression, newStatement, propertyNames)
+                break
+            case "inList":
+                addInListCondition(expression, newStatement, propertyNames)
+                break
+            default:
+                super.addError("unknown groovy-style whereable", expression)
+                return
+        }
+    }
+
+    private void addInListCondition(BinaryExpression expression, BlockStatement newStatement, List<String> propertyNames) {
+        Expression left = expression.leftExpression
+        if (!(left instanceof VariableExpression) || !propertyNames.contains(left.name)) {
+            super.addError("Invalid entity property", left)
+            return
+        }
+        Expression right = expression.rightExpression
+        if (right instanceof RangeExpression) {
+            def newExpr = new ExpressionStatement(
+                    new MethodCallExpression(
+                            new VariableExpression("this"),
+                            new ConstantExpression("inList"),
+                            new ArgumentListExpression(
+                                    new ConstantExpression(left.name),
+                                    new RangeExpression(right.from, right.to, right.inclusive)
+                            )
+                    )
+            )
+            newStatement.addStatement(newExpr)
+        } else if (right instanceof VariableExpression){
+            def newExpr = new ExpressionStatement(
+                    new MethodCallExpression(
+                            new VariableExpression("this"),
+                            new ConstantExpression("inList"),
+                            new ArgumentListExpression(
+                                    new ConstantExpression(left.name),
+                                    new VariableExpression(right.name)
+                            )
+                    )
+            )
+            newStatement.addStatement(newExpr)
+        } else {
+            super.addError("Unknown expression", right)
+        }
+    }
+
+    private void addBasicCondition(String method, BinaryExpression expression, BlockStatement newStatement, List<String> propertyNames) {
+        Expression left = expression.leftExpression
+        if (!(left instanceof VariableExpression) || !propertyNames.contains(left.name)) {
+            super.addError("Invalid entity property", left)
+            return
+        }
+
+        Expression right = expression.rightExpression
+        if (right instanceof ConstantExpression) {
+            def newExpr = new ExpressionStatement(
+                    new MethodCallExpression(
+                            new VariableExpression("this"),
+                            new ConstantExpression(method),
+                            new ArgumentListExpression(
+                                    new ConstantExpression(left.name),
+                                    new ConstantExpression(right.value)
+                            )
+                    )
+            )
+            newStatement.addStatement(newExpr)
+        } else if (right instanceof VariableExpression) {
+            ExpressionStatement newExpr = null
+            if (propertyNames.contains(right.name)) {
+                newExpr = new ExpressionStatement(
+                        new MethodCallExpression(
+                                new VariableExpression("this"),
+                                new ConstantExpression(PROPERTY_WHEREABLE_OPERATOR[method]),
+                                new ArgumentListExpression(
+                                        new ConstantExpression(left.name),
+                                        new ConstantExpression(right.name)
+                                )
+                        )
+                )
+            } else {
+                newExpr = new ExpressionStatement(
+                        new MethodCallExpression(
+                                new VariableExpression("this"),
+                                new ConstantExpression(method),
+                                new ArgumentListExpression(
+                                        new ConstantExpression(left.name),
+                                        new VariableExpression(right.name)
+                                )
+                        )
+                )
+            }
+            newStatement.addStatement(newExpr)
+        } else {
+            super.addError("Unknown expression", expression)
+        }
+    }
+
+    private void addMultiConditionStatement(BinaryExpression binaryExpression,
+                                            BlockStatement newStatement,
+                                            List<String> propertyNames) {
+        String conditionMethod = MULTI_CONDITION_OPERATOR_MAP[binaryExpression.operation.text]
+        BlockStatement subConditionStatement = new BlockStatement()
+        addNewStatement(binaryExpression.leftExpression, subConditionStatement, propertyNames)
+        addNewStatement(binaryExpression.rightExpression, subConditionStatement, propertyNames)
+        def newExpr = new ExpressionStatement(
                 new MethodCallExpression(
                         new VariableExpression("this"),
                         new ConstantExpression(conditionMethod),
                         new ArgumentListExpression(
-                                new ClosureExpression()
+                                new ClosureExpression(null, subConditionStatement)
                         )
                 )
         )
+        newStatement.addStatement(newExpr)
     }
 
     private List<String> getPropertyNames(Class aClass) {
@@ -173,7 +274,6 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             String methodName = constantExpression.value
             return whereMethods.contains(methodName)
         }
-
         false
     }
 
@@ -210,23 +310,4 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             return entityImportNode.type.name
         }
     }
-
-    private boolean isCandidateMethodCallForTransform(Expression objectExpression, Expression method, Expression arguments) {
-        return ((objectExpression instanceof ClassExpression) || isObjectExpressionWhereCall(objectExpression)) &&
-                isCandidateWhereMethod(method, arguments);
-    }
-
-    private boolean isObjectExpressionWhereCall(Expression objectExpression) {
-        if (objectExpression instanceof VariableExpression) {
-            VariableExpression ve = (VariableExpression) objectExpression;
-            return isCandidateWhereMethod(mce.getMethodAsString(), mce.getArguments());
-        }
-        return false;
-    }
-
-    private boolean isCandidateWhereMethod(String methodName, Expression arguments) {
-        return isCandidateMethod(methodName, arguments, WHEREABLE_METHODS);
-    }
-
-
 }

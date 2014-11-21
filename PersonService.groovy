@@ -7,11 +7,9 @@ import models.Person
 class PersonService {
 
     List<Person> findPerson(Integer startAge) {
+        List ages = [21,22,28]
         Person.find {
-            and {
-                age = 1
-            }
-            age > 1 && name == "Noah"
+            age in ages
         }
     }
 }

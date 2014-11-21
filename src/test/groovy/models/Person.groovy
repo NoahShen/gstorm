@@ -7,6 +7,7 @@ import gstorm.annotation.Entity
  */
 @Entity
 class Person {
-    def name
+    def firstName
+    def lastName
     int age
 }
