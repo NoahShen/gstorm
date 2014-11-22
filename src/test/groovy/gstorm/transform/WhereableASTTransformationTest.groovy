@@ -18,7 +18,8 @@ class WhereableASTTransformationTest extends GroovyTestCase {
         sql = Sql.newInstance("jdbc:hsqldb:mem:database", "sa", "", "org.hsqldb.jdbc.JDBCDriver")
         gstorm = new Gstorm(sql)
         gstorm.enableQueryLogging(Level.INFO)
-        gstorm.stormify(Person, true)    }
+        gstorm.stormify(Person, true)
+    }
 
 
     void testVisit() {

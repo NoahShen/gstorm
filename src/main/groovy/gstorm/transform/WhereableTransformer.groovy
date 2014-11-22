@@ -62,14 +62,15 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
 
     @Override
     void visitMethodCallExpression(MethodCallExpression call) {
-        Expression objectExpression = call.getObjectExpression();
-        Expression methodExpression = call.getMethod();
-        Expression argumentsExpression = call.getArguments();
+        Expression objectExpression = call.objectExpression
+        Expression methodExpression = call.method
+        Expression argumentsExpression = call.arguments
         Class entityClass = extractEntityClass(objectExpression)
         if (!entityClass) {
             super.visitMethodCallExpression(call)
             return
         }
+        println "Entity ${entityClass}"
         if (!isWhereableMethod(methodExpression, WHEREABLE_METHODS)) {
             super.visitMethodCallExpression(call)
             return
@@ -85,6 +86,7 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
 
     private void transformClosureExpression(Class entityClass, ClosureExpression closureExpression) {
         List<String> propertyNames = getPropertyNames(entityClass)
+        println "Entity propertyNames: ${propertyNames}"
         Statement oldStatement = closureExpression.code
         BlockStatement newStatement = new BlockStatement()
         if (oldStatement instanceof BlockStatement) {
@@ -144,7 +146,7 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
     private void addInListCondition(BinaryExpression expression, BlockStatement newStatement, List<String> propertyNames) {
         Expression left = expression.leftExpression
         if (!(left instanceof VariableExpression) || !propertyNames.contains(left.name)) {
-            super.addError("Invalid entity property", left)
+            super.addError("Invalid entity property for groovy-style whereable", left)
             return
         }
         Expression right = expression.rightExpression
@@ -180,7 +182,7 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
     private void addBasicCondition(String method, BinaryExpression expression, BlockStatement newStatement, List<String> propertyNames) {
         Expression left = expression.leftExpression
         if (!(left instanceof VariableExpression) || !propertyNames.contains(left.name)) {
-            super.addError("Invalid entity property", left)
+            super.addError("Invalid entity property for groovy-style whereable", left)
             return
         }
 
@@ -298,7 +300,6 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
         if (entityAnnotation) {
             return aClass
         }
-
     }
 
     private String extractClassNameFromImport(String simpleName) {
