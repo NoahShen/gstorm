@@ -1,6 +1,8 @@
 package gstorm.transform
+
 import gstorm.annotation.Entity
-import org.codehaus.groovy.ast.*
+import org.codehaus.groovy.ast.ClassCodeVisitorSupport
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
@@ -65,12 +67,12 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
         Expression objectExpression = call.objectExpression
         Expression methodExpression = call.method
         Expression argumentsExpression = call.arguments
-        Class entityClass = extractEntityClass(objectExpression)
-        if (!entityClass) {
+        ClassNode entityClassNode = extractEntityClassNode(objectExpression)
+        if (!entityClassNode) {
             super.visitMethodCallExpression(call)
             return
         }
-        println "Entity ${entityClass}"
+        println "Entity ${entityClassNode}"
         if (!isWhereableMethod(methodExpression, WHEREABLE_METHODS)) {
             super.visitMethodCallExpression(call)
             return
@@ -80,13 +82,13 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             super.visitMethodCallExpression(call)
             return
         }
-        transformClosureExpression(entityClass, whereClosure)
+        List<String> propertyNames = getPropertyNames(entityClassNode)
+        println "Entity propertyNames: ${propertyNames}"
+        transformClosureExpression(propertyNames, whereClosure)
         super.visitMethodCallExpression(call)
     }
 
-    private void transformClosureExpression(Class entityClass, ClosureExpression closureExpression) {
-        List<String> propertyNames = getPropertyNames(entityClass)
-        println "Entity propertyNames: ${propertyNames}"
+    private void transformClosureExpression(List<String> propertyNames, ClosureExpression closureExpression) {
         Statement oldStatement = closureExpression.code
         BlockStatement newStatement = new BlockStatement()
         if (oldStatement instanceof BlockStatement) {
@@ -105,6 +107,8 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
                 if (statement.expression instanceof BinaryExpression) {
                     BinaryExpression binaryExpression = statement.expression
                     addNewStatement(binaryExpression, newStatement, propertyNames)
+                } else {
+                    newStatement.addStatement(statement)
                 }
             }
         }
@@ -117,6 +121,9 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
             super.addError("unknown groovy-style whereable", expression)
             return
         }
+
+        println "transform expression ${expression.text}"
+
         if (MULTI_CONDITION_OPERATOR_MAP.containsKey(expression.operation.text)) {
             addMultiConditionStatement(expression, newStatement, propertyNames)
         } else {
@@ -249,8 +256,15 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
         newStatement.addStatement(newExpr)
     }
 
-    private List<String> getPropertyNames(Class aClass) {
-        aClass.declaredFields.findAll { !it.synthetic }.collect {
+    private List<String> getPropertyNames(ClassNode entityClassNode) {
+        def fields = entityClassNode.fields
+        if (fields) {
+            return fields.collect {
+                it.name
+            }
+        }
+        Class clazz = Class.forName(entityClassNode.name)
+        clazz.declaredFields.findAll { !it.synthetic }.collect {
             it.name
         }
     }
@@ -279,36 +293,47 @@ class WhereableTransformer extends ClassCodeVisitorSupport {
         false
     }
 
-    private Class extractEntityClass(Expression objectExpression) {
-        String clazzName = ""
+    private ClassNode extractEntityClassNode(Expression objectExpression) {
+        ClassNode classNode = null
         if (objectExpression instanceof ClassExpression) {
             ClassExpression classExpression = objectExpression
-            ClassNode classNode = classExpression.getType()
-            clazzName = classNode.getName()
+            classNode = classExpression.getType()
         }
         if (objectExpression instanceof VariableExpression) {
             VariableExpression variableExpression = objectExpression
-            String simpleName = variableExpression.getName()
-            clazzName = extractClassNameFromImport(simpleName)
+            String simpleName = variableExpression.name
+            classNode = extractClassNodeFromImport(simpleName)
 
         }
-        if (!clazzName) {
+        if (!classNode) {
             return null
         }
-        Class aClass = Class.forName(clazzName)
-        Entity entityAnnotation = aClass.getAnnotation(Entity)
-        if (entityAnnotation) {
-            return aClass
+        def annotations = classNode.annotations
+        if (annotations) {
+            def isEntity = annotations.any {
+                String className = it.classNode.getName()
+                Entity.name == className
+            }
+            if (isEntity) {
+                return classNode
+            }
         }
+        String className = classNode.name
+        Class clazz = Class.forName(className)
+        Entity e = clazz.getAnnotation(Entity)
+        if (e) {
+            return classNode
+        }
+        return null
     }
 
-    private String extractClassNameFromImport(String simpleName) {
+    private ClassNode extractClassNodeFromImport(String simpleName) {
         def importNodes = sourceUnit.getAST().imports
         def entityImportNode = importNodes.find {
             it.alias == simpleName
         }
         if (entityImportNode) {
-            return entityImportNode.type.name
+            return entityImportNode.type
         }
     }
 }
