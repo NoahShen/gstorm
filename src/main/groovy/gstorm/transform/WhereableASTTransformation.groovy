@@ -13,6 +13,12 @@ import org.kohsuke.MetaInfServices
 public class WhereableASTTransformation implements ASTTransformation {
 
     public void visit(ASTNode[] nodes, SourceUnit sourceUnit) {
+
+        def isTransform = System.getProperty("entity.transform")
+        if (!isTransform) {
+            return
+        }
+
         WhereableTransformer whereableTransformer = new WhereableTransformer(sourceUnit)
         ModuleNode ast = sourceUnit.getAST();
         List<ClassNode> classes = ast.getClasses();
