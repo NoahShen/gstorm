@@ -48,6 +48,13 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.6</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.kohsuke.metainf-services</groupId>
+            <artifactId>metainf-services</artifactId>
+            <version>1.1</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -59,9 +66,9 @@
                 <executions>
                     <execution>
                         <goals>
-                            <!--<goal>generateStubs</goal>-->
+                            <goal>generateStubs</goal>
                             <goal>compile</goal>
-                            <!--<goal>testGenerateStubs</goal>-->
+                            <goal>testGenerateStubs</goal>
                             <goal>testCompile</goal>
                             <goal>removeStubs</goal>
                             <goal>removeTestStubs</goal>

@@ -1,10 +1,8 @@
 package gstorm.annotation
-
 import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME
-
-@Retention(RUNTIME)
+@Retention (RetentionPolicy.RUNTIME)
 @interface Table {
 
     String name()
