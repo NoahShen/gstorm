@@ -275,4 +275,61 @@ class PersonService {
 
     }
 
+    void testAndCondition() {
+        new PersonForTransform(firstName: "Noah", lastName: "Shen", age: 27).save()
+        new PersonForTransform(firstName: "Sara", lastName: "Shi", age: 25).save()
+        new PersonForTransform(firstName: "Noah", lastName: "Shen2", age: 27).save()
+
+        String codes = """
+import models.PersonForTransform
+
+class PersonService {
+
+    def findNameAndAge(String firstNameCondition, String lastNameCondition, def ageCondition) {
+        PersonForTransform.where {
+            age == ageCondition
+            firstName == firstNameCondition && lastName == lastNameCondition
+        }
+    }
+}
+"""
+
+        def invoker = new TransformTestHelper(new WhereableASTTransformation(), CompilePhase.CONVERSION)
+        def clazz = invoker.parse(codes)
+        def personService = clazz.newInstance()
+
+        def persons = personService.findNameAndAge("Noah", "Shen", 27)
+        assert persons.size == 1
+        assert persons[0].lastName == "Shen"
+
+    }
+
+    void testOrCondition() {
+        new PersonForTransform(firstName: "Noah", lastName: "Shen", age: 27).save()
+        new PersonForTransform(firstName: "Sara", lastName: "Shi", age: 25).save()
+        new PersonForTransform(firstName: "Noah", lastName: "Shen2", age: 27).save()
+
+        String codes = """
+import models.PersonForTransform
+
+class PersonService {
+
+    def findNameOrAge(String lastNameCondition1, String lastNameCondition2, def ageCondition) {
+        PersonForTransform.where {
+            age == ageCondition
+            lastName == lastNameCondition1 || lastName == lastNameCondition2
+        }
+    }
+}
+"""
+
+        def invoker = new TransformTestHelper(new WhereableASTTransformation(), CompilePhase.CONVERSION)
+        def clazz = invoker.parse(codes)
+        def personService = clazz.newInstance()
+
+        def persons = personService.findNameOrAge("Shen", "Shen2", 27)
+        assert persons.size == 2
+
+    }
+
 }
